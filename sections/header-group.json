@@ -1,0 +1,43 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "name": "t:sections.header.name",
+  "type": "header",
+  "sections": {
+    "header": {
+      "type": "header",
+      "settings": {
+        "logo_position": "middle-left",
+        "mobile_logo_position": "center",
+        "menu": "main-menu",
+        "menu_type_desktop": "mega",
+        "sticky_header_type": "on-scroll-up",
+        "show_line_separator": false,
+        "color_scheme": "scheme-1",
+        "menu_color_scheme": "scheme-4",
+        "enable_country_selector": true,
+        "enable_language_selector": true,
+        "enable_customer_avatar": true,
+        "margin_bottom": 0,
+        "padding_top": 12,
+        "padding_bottom": 12,
+        "contact_button_text": "צור קשר",
+        "contact_button_url": "shopify://pages/contact",
+        "show_contact_button": true,
+        "phone_number": "09-7626115",
+        "phone_title": "שאל שאלות",
+        "show_phone": true
+      }
+    }
+  },
+  "order": [
+    "header"
+  ]
+}

@@ -1,0 +1,194 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "main": {
+      "type": "main-page",
+      "custom_css": [],
+      "settings": {
+        "enable_banner": true,
+        "desktop_image": "shopify://shop_images/Mask_group_99fca720-48c1-41db-b1dc-2e245afc3c0f.jpg",
+        "mobile_image": "shopify://shop_images/Mask_group_mb_1.png",
+        "banner_page_width": true,
+        "banner_background_color": "#f1f3f7",
+        "banner_text_color": "#ffffff",
+        "padding_top": 50,
+        "padding_bottom": 50
+      }
+    },
+    "image_with_text_AbA74n": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_Vez7TC": {
+          "type": "heading",
+          "settings": {
+            "heading": "סיפור עלינו",
+            "heading_size": "h1"
+          }
+        },
+        "text_GCfAJF": {
+          "type": "text",
+          "settings": {
+            "text": "<p>אחד הסיפורים הייחודיים שלנו התחיל עם משימה פשוטה – לחבר את הטכנולוגיה העדכנית ביותר לעסקים. <br/>כיום, אנחנו מחזיקים במוקד תמיכה מתקדם ויכולת לתת מענה מקצועי ללקוחות בכל סדר גודל. <br/>הצוות שלנו מורכב ממומחים בתחומי מחשוב, תקשורת, ענן וסייבר, עם הבנה עמוקה בצרכים של לקוחות עסקיים.<br/>אנחנו מאמינים בשירות אישי, בהתאמה מלאה, ובטכנולוגיה שמייצרת הצלחה.</p>",
+            "text_style": "body"
+          }
+        }
+      },
+      "block_order": [
+        "heading_Vez7TC",
+        "text_GCfAJF"
+      ],
+      "name": "t:sections.image-with-text.presets.name",
+      "settings": {
+        "image": "shopify://shop_images/Mask_group_3.jpg",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "image_first",
+        "image_behavior": "none",
+        "content_layout": "no-overlap",
+        "desktop_content_position": "middle",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "scheme-1",
+        "color_scheme": "scheme-1",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "image_with_text_DiAGQM": {
+      "type": "image-with-text",
+      "blocks": {
+        "heading_rr7jTU": {
+          "type": "heading",
+          "settings": {
+            "heading": "תחומי ההתמחות שלנו",
+            "heading_size": "h1"
+          }
+        },
+        "text_xWd3MJ": {
+          "type": "text",
+          "settings": {
+            "text": "<p>בתחומי ההתמחות שלנו תמצאו פתרונות מחשוב לעסקים קטנים ובינוניים:</p><ul><li>מחשבים ניידים ונייחים ממותגים מובילים (Dell, Lenovo, HP, Apple)</li><li>תחנות עבודה ושרתים</li><li>- ציוד רשת ואחסון (Ubiquiti, Synology, Qnap, Sandisk, Seagate)</li><li>פתרונות ענן ו-Backup</li><li>שירותי תמיכה מרחוק ותחזוקה שוטפת</li><li>מחשבים מותאמים אישית למפתחים, גיימרים ויוצרי תוכן</li></ul>",
+            "text_style": "body"
+          }
+        }
+      },
+      "block_order": [
+        "heading_rr7jTU",
+        "text_xWd3MJ"
+      ],
+      "name": "t:sections.image-with-text.presets.name",
+      "settings": {
+        "image": "shopify://shop_images/Mask_group_1_ee96d031-bc41-4cf9-b909-1ed6ffdfe9fd.jpg",
+        "height": "adapt",
+        "desktop_image_width": "medium",
+        "layout": "text_first",
+        "image_behavior": "none",
+        "content_layout": "no-overlap",
+        "desktop_content_position": "middle",
+        "desktop_content_alignment": "left",
+        "mobile_content_alignment": "left",
+        "section_color_scheme": "scheme-3",
+        "color_scheme": "scheme-3",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
+    },
+    "image_banner_gJReyV": {
+      "type": "image-banner",
+      "blocks": {
+        "heading_WPbLQx": {
+          "type": "heading",
+          "settings": {
+            "heading": "<p>קרינורקסי – מחשבים מותאמים אישית לביצועים מקסימליים</p>",
+            "heading_size": "h1"
+          }
+        },
+        "buttons_NWBNDU": {
+          "type": "buttons",
+          "settings": {
+            "button_label_1": "הצג פרטים",
+            "button_link_1": "shopify://collections/dell",
+            "button_style_secondary_1": false,
+            "button_label_2": "",
+            "button_link_2": "",
+            "button_style_secondary_2": false
+          }
+        }
+      },
+      "block_order": [
+        "heading_WPbLQx",
+        "buttons_NWBNDU"
+      ],
+      "name": "t:sections.image-banner.presets.name",
+      "settings": {
+        "image": "shopify://shop_images/Mask_group_2_a6d7acae-341c-4d25-ac8a-411f3ecf8896.jpg",
+        "mobile_image": "shopify://shop_images/Mask_group_2_mb.png",
+        "image_overlay_opacity": 0,
+        "image_height": "adapt",
+        "image_behavior": "none",
+        "desktop_content_position": "middle-right",
+        "desktop_content_alignment": "right",
+        "show_text_box": false,
+        "color_scheme": "scheme-5",
+        "stack_images_on_mobile": false,
+        "mobile_content_alignment": "center",
+        "show_text_below": false,
+        "page_width": true
+      }
+    },
+    "features_strip_jCfHBj": {
+      "type": "features-strip",
+      "blocks": {
+        "feature_item_B6JGeQ": {
+          "type": "feature_item",
+          "settings": {
+            "icon": "shopify://shop_images/Frame_5a7c8534-1957-4d8f-a20f-09f09eb718c2.svg",
+            "heading": "תהליך רכישה מאובטח ומבוקר בכל שלב",
+            "text": "תהליך מאובטח"
+          }
+        },
+        "feature_item_NpnjwK": {
+          "type": "feature_item",
+          "settings": {
+            "icon": "shopify://shop_images/Frame_1_1664619c-6f05-4ade-9bc8-1cbd8a07ac41.svg",
+            "heading": "שירות לקוחות אישי ומקצועי לכל אורך הדרך",
+            "text": "סיוע אישי"
+          }
+        },
+        "feature_item_JVgNfK": {
+          "type": "feature_item",
+          "settings": {
+            "icon": "shopify://shop_images/Frame_2_32e9f1c9-80d9-437d-a0f1-d8c34d500ea5.svg",
+            "heading": "התאמה מלאה לצרכים העסקיים והאישיים",
+            "text": "פתרונות מותאמים אישית"
+          }
+        }
+      },
+      "block_order": [
+        "feature_item_B6JGeQ",
+        "feature_item_NpnjwK",
+        "feature_item_JVgNfK"
+      ],
+      "name": "Features Strip",
+      "settings": {
+        "padding_top": 0,
+        "padding_bottom": 80
+      }
+    }
+  },
+  "order": [
+    "main",
+    "image_with_text_AbA74n",
+    "image_with_text_DiAGQM",
+    "image_banner_gJReyV",
+    "features_strip_jCfHBj"
+  ]
+}

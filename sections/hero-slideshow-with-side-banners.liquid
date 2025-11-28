@@ -1,0 +1,253 @@
+{{ 'hero-slideshow-side-banners.css' | asset_url | stylesheet_tag }}
+
+<div class="hero-slideshow-side-banners page-width">
+  <div class="hero-slideshow-side-banners__inner">
+    
+    <!-- Slideshow -->
+    <div class="hero-slideshow-side-banners__slideshow">
+      <div class="slideshow" 
+        data-autoplay="{{ section.settings.autoplay }}"
+        data-speed="{{ section.settings.autoplay_speed | times: 1000 }}">
+        
+        {%- for block in section.blocks -%}
+          <div class="slideshow__slide" {{ block.shopify_attributes }}>
+            {%- if block.settings.slide_image != blank -%}
+              <div class="slideshow__media">
+                {{ block.settings.slide_image | image_url: width: 2000 | image_tag }}
+              </div>
+            {%- endif -%}
+            
+            <div class="slideshow__content">
+              {%- if block.settings.slide_logo_image != blank -%}
+                <div class="slideshow__logo">
+                  {{ block.settings.slide_logo_image | image_url: width: 213 | image_tag }}
+                </div>
+              {%- endif -%}
+              {%- if block.settings.slide_heading != blank -%}
+                <h2 class="slideshow__heading">{{ block.settings.slide_heading }}</h2>
+              {%- endif -%}
+              {%- if block.settings.slide_subheading != blank -%}
+                <p class="slideshow__subheading subtitle">{{ block.settings.slide_subheading }}</p>
+              {%- endif -%}
+              
+              {%- if block.settings.slide_button_label != blank -%}
+                <a href="{{ block.settings.slide_link | default: '#' }}" class="button button--secondary">
+                  {{ block.settings.slide_button_label }}
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    <!-- Right side banners -->
+    <div class="hero-slideshow-side-banners__side">
+      
+      <!-- Top banner -->
+      {%- if section.settings.right_top_image != blank -%}
+        <a href="{{ section.settings.right_top_link | default: '#' }}" class="side-banner side-banner--top">
+          {{ section.settings.right_top_image | image_url: width: 800 | image_tag }}
+          {%- if section.settings.right_top_heading != blank -%}
+            <span class="side-banner__heading">{{ section.settings.right_top_heading }}</span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      <!-- Bottom banner -->
+      {%- if section.settings.right_bottom_image != blank -%}
+        <a href="{{ section.settings.right_bottom_link | default: '#' }}" class="side-banner side-banner--bottom">
+          {{ section.settings.right_bottom_image | image_url: width: 800 | image_tag }}
+          {%- if section.settings.right_bottom_heading != blank -%}
+            <span class="side-banner__heading">{{ section.settings.right_bottom_heading }}</span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+    </div>
+  </div>
+  {%- assign feature_blocks = section.blocks | where: 'type', 'feature_item' -%}
+  {%- if feature_blocks.size > 0 -%}
+    <div class="features-strip">
+      <div class="features-grid">
+        {%- for block in feature_blocks -%}
+          <div class="feature" {{ block.shopify_attributes }}>
+            {%- if block.settings.icon != blank -%}
+              <div class="feature__icon">
+                {{ block.settings.icon | image_url: width: 50 | image_tag: loading: 'lazy' }}
+              </div>
+            {%- endif -%}
+
+            <div class="feature-info">
+              {%- if block.settings.heading != blank -%}
+                <h3 class="feature__heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+
+              {%- if block.settings.text != blank -%}
+                <p class="feature__text">{{ block.settings.text }}</p>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+{% schema %}
+{
+  "name": "t:sections.hero-slideshow-with-side-banners.name",
+  "tag": "section",
+  "class": "section hero-slideshow-side-banners",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:sections.hero-slideshow-with-side-banners.settings.slideshow.content"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.slideshow.autoplay.label",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.slideshow.autoplay_speed.label",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+
+    {
+      "type": "header",
+      "content": "t:sections.hero-slideshow-with-side-banners.settings.right_top.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_top_image",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.right_top.image.label"
+    },
+    {
+      "type": "text",
+      "id": "right_top_heading",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.right_top.heading.label",
+      "default": "ThinkPad X1 Carbon"
+    },
+    {
+      "type": "url",
+      "id": "right_top_link",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.right_top.link.label"
+    },
+
+    {
+      "type": "header",
+      "content": "t:sections.hero-slideshow-with-side-banners.settings.right_bottom.content"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_bottom_image",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.right_bottom.image.label"
+    },
+    {
+      "type": "text",
+      "id": "right_bottom_heading",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.right_bottom.heading.label",
+      "default": "Lenovo ThinkCentre"
+    },
+    {
+      "type": "url",
+      "id": "right_bottom_link",
+      "label": "t:sections.hero-slideshow-with-side-banners.settings.right_bottom.link.label"
+    }
+  ],
+
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "t:sections.hero-slideshow-with-side-banners.blocks.slide.name",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "slide_image",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.image.label"
+        },
+        {
+          "type": "image_picker",
+          "id": "slide_logo_image",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.logo.label"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "slide_heading",
+          "default": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.heading.default",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.heading.label"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "slide_subheading",
+          "default": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.subheading.default",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.subheading.label"
+        },
+        {
+          "type": "text",
+          "id": "slide_button_label",
+          "default": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.button_label.default",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.button_label.label"
+        },
+        {
+          "type": "url",
+          "id": "slide_link",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.slide.settings.button_link.label"
+        }
+      ]
+    },
+    {
+      "type": "feature_item",
+      "name": "t:sections.hero-slideshow-with-side-banners.blocks.feature_item.name",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.feature_item.settings.icon.label"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.feature_item.settings.heading.label",
+          "default": "t:sections.hero-slideshow-with-side-banners.blocks.feature_item.settings.heading.default"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "t:sections.hero-slideshow-with-side-banners.blocks.feature_item.settings.text.label",
+          "default": "t:sections.hero-slideshow-with-side-banners.blocks.feature_item.settings.text.default"
+        }
+      ]
+    }
+  ],
+
+  "presets": [
+    {
+      "name": "t:sections.hero-slideshow-with-side-banners.presets.name",
+      "blocks": [
+        {
+          "type": "slide"
+        },
+        {
+          "type": "slide"
+        },
+        { "type": "feature_item" },
+        { "type": "feature_item" },
+        { "type": "feature_item" }
+      ]
+    }
+  ]
+}
+{% endschema %}

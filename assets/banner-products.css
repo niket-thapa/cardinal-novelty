@@ -1,0 +1,218 @@
+/* Banner with Products Section Styles */
+
+.banner-products {
+  padding: 8rem 0;
+  background-color: #F1F3F7;
+}
+
+.banner-products__layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--grid-desktop-horizontal-spacing, 3rem);
+}
+
+/* Banner Section */
+.banner-products__banner {
+  background: linear-gradient(135deg, var(--color-background-secondary, #f8f9fa) 0%, var(--color-background, #ffffff) 100%);
+  padding: 2rem;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Banner with Background Image */
+.banner-products__banner--with-image {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: scroll;
+}
+
+.banner-products__banner--with-image::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.banner-products__banner--with-image .banner-products__banner-content {
+  position: relative;
+  z-index: 2;
+}
+
+.banner-products__banner--with-image .banner-products__banner-heading,
+.banner-products__banner--with-image .banner-products__banner-description {
+  color: #ffffff;
+}
+
+.banner-products__banner-content {
+  max-width: 60rem;
+  margin: 0 auto;
+}
+
+.banner-products__banner-heading {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--color-foreground, #000000);
+  margin: 0 0 0.8rem;
+  line-height: 1.25;
+}
+
+.banner-products__banner-description {
+  font-size: 1.6rem;
+  color: var(--color-foreground-75, #666666);
+  margin: 0 0 1.4rem;
+  line-height: 1.6;
+}
+
+.banner-products__banner-description p {
+  margin: 0;
+}
+
+.banner-products__banner-content .button {
+  min-width: 14.3rem;
+}
+
+
+/* Products Section */
+.banner-products__products {
+  width: 100%;
+}
+
+.banner-products__products-grid {
+  display: flex;
+  gap: calc(var(--grid-desktop-horizontal-spacing) / 1.5);
+}
+
+@media screen and (max-width: 749px) {
+  .banner-products__products {
+    min-width: 0;
+  }
+
+  .banner-products__products-grid {
+    overflow: auto hidden;
+    margin-inline-end: -1.5rem;
+    /* Hide scrollbar for WebKit browsers */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* Internet Explorer 10+ */
+  }
+  
+  /* Add padding at the end of scroll */
+  .banner-products__products-grid::after {
+    content: '';
+    flex-shrink: 0;
+    width: 0rem;
+  }
+  
+  .banner-products__products-grid::-webkit-scrollbar {
+    display: none; /* WebKit browsers */
+  }
+
+  .banner-products__products-grid .custom_grid__item {
+    min-width: 23.4rem;
+  }
+}
+
+
+/* Tablet Layout */
+@media screen and (min-width: 750px) {
+  .banner-products__layout {
+    gap: var(--grid-desktop-horizontal-spacing, 2.4rem);
+  }
+  
+  .banner-products__banner {
+    padding: 2.5rem;
+  }
+  
+  .banner-products__banner-heading {
+    font-size: 3.2rem;
+    margin-block-end: 1.2rem;
+  }
+  
+  .banner-products__banner-description {
+    font-size: 1.6rem;
+    margin-block-end: 2.1rem;
+  }
+  
+  .banner-products__products-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--grid-desktop-horizontal-spacing, 2.4rem);
+  }
+}
+
+/* Desktop Layout */
+@media screen and (min-width: 990px) {
+  .banner-products__layout {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: var(--grid-desktop-horizontal-spacing, 2.4rem);
+  }
+  
+  .banner-products__banner {
+    padding: 3rem;
+  }
+  
+  .banner-products__banner-heading {
+    font-size: 4rem;
+    margin-block-end: 1.7rem;
+  }
+  
+  .banner-products__banner-description {
+    font-size: 1.8rem;
+    margin-block-end: 2.8rem;
+  }
+  
+  .banner-products__products {
+    grid-column: span 3;
+  }
+  
+  .banner-products__products-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2.4rem;
+  }
+}
+
+/* Mobile Responsive Adjustments */
+@media screen and (max-width: 749px) {
+  .banner-products {
+    padding: 3.2rem 0;
+  }
+  
+  .banner-products__container {
+    padding: 0 1.5rem;
+  }
+  
+  .banner-products__banner {
+    padding: 1.5rem;
+  }
+  
+  .banner-products__banner-heading {
+    font-size: 2.2rem;
+  }
+  
+  .banner-products__banner-description {
+    font-size: 1.4rem;
+  }
+  
+  
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  /* Reduced motion styles handled by theme's button component */
+}
+
+/* Focus States */
+/* Focus states handled by theme's button component */
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .banner-products__banner {
+    background: var(--color-background, #ffffff);
+    border: 2px solid var(--color-foreground, #000000);
+  }
+}

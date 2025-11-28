@@ -1,0 +1,301 @@
+.logos-marquee-section {
+  padding: 0 0 3.2rem;
+  overflow: hidden;
+  position: relative;
+}
+
+@media screen and (min-width: 750px) {
+  .logos-marquee-section {
+    padding-block-end: 8rem;
+  }
+}
+
+.logos-marquee__heading {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.logos-marquee__container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+/* RTL mask support */
+[dir="rtl"] .logos-marquee__container {
+  mask-image: linear-gradient(
+    to left,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to left,
+    transparent 0%,
+    black 10%,
+    black 90%,
+    transparent 100%
+  );
+}
+
+.logos-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marquee-scroll linear infinite;
+  will-change: transform;
+  align-items: center;
+}
+
+/* Mobile animation override */
+@media screen and (max-width: 749px) {
+  .logos-marquee__track {
+    animation: marquee-scroll-mobile linear infinite;
+  }
+  
+  [dir="rtl"] .logos-marquee__track {
+    animation: marquee-scroll-mobile-rtl linear infinite;
+  }
+}
+
+/* RTL Support - Desktop only */
+@media screen and (min-width: 750px) {
+  [dir="rtl"] .logos-marquee__track {
+    animation: marquee-scroll-rtl linear infinite;
+  }
+}
+
+.logos-marquee__content {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  white-space: nowrap;
+}
+
+.logos-marquee__item {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 5rem;
+}
+
+.logos-marquee__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.logos-marquee__logo:hover {
+  transform: scale(1.05);
+}
+
+.logos-marquee__link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+.logos-marquee__image {
+  max-width: 100%;
+  height: 5rem;
+  width: auto;
+  object-fit: contain;
+}
+
+@media screen and (max-width: 749px) {
+  .logos-marquee__image {
+    height: 3.2rem;
+  }
+}
+
+@media screen and (min-width: 750px) {
+
+.logos-marquee__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(var(--color-foreground), 0.1);
+  border-radius: 0.8rem;
+  border: 0.1rem dashed rgba(var(--color-foreground), 0.3);
+}
+
+.logos-marquee__placeholder-text {
+  font-size: 1.2rem;
+  color: rgba(var(--color-foreground), 0.6);
+  text-align: center;
+}
+
+/* Pause animation on hover */
+.logos-marquee-section[data-pause-on-hover="true"]:hover .logos-marquee__track {
+  animation-play-state: paused;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 749px) {  
+  .logos-marquee__heading {
+    margin-bottom: 2rem;
+  }
+  
+  .logos-marquee__content {
+    gap: 1.5rem;
+  }
+  
+  .logos-marquee__item {
+    height: 5rem;
+  }
+  
+  .logos-marquee__container {
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+  }
+  
+  /* RTL mobile mask */
+  [dir="rtl"] .logos-marquee__container {
+    mask-image: linear-gradient(
+      to left,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+    -webkit-mask-image: linear-gradient(
+      to left,
+      transparent 0%,
+      black 5%,
+      black 95%,
+      transparent 100%
+    );
+  }
+  
+  /* Mobile animation performance fixes */
+  .logos-marquee__track {
+    animation-duration: 20s !important; /* Faster on mobile for better performance */
+    animation-timing-function: linear;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  /* RTL mobile performance fixes - ensure RTL animations work */
+  [dir="rtl"] .logos-marquee__track,
+  .logos-marquee-section[dir="rtl"] .logos-marquee__track {
+    animation-duration: 20s !important;
+    animation-timing-function: linear;
+    transform: translateZ(0);
+    will-change: transform;
+  }
+  
+  /* Ensure smooth animation on mobile */
+  .logos-marquee__track * {
+    transform: translateZ(0);
+  }
+}
+
+@media screen and (min-width: 750px) {
+  .logos-marquee__content {
+    gap: 6rem;
+  }
+  
+  .logos-marquee__item {
+    height: 5rem;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .logos-marquee__track {
+    animation: none;
+  }
+  
+  .logos-marquee__container {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .logos-marquee__container::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
+/* Custom speed variations */
+.logos-marquee-section[data-marquee-speed="10"] .logos-marquee__track {
+  animation-duration: 10s;
+}
+
+.logos-marquee-section[data-marquee-speed="15"] .logos-marquee__track {
+  animation-duration: 15s;
+}
+
+.logos-marquee-section[data-marquee-speed="20"] .logos-marquee__track {
+  animation-duration: 20s;
+}
+
+.logos-marquee-section[data-marquee-speed="25"] .logos-marquee__track {
+  animation-duration: 25s;
+}
+
+.logos-marquee-section[data-marquee-speed="30"] .logos-marquee__track {
+  animation-duration: 30s;
+}
+
+.logos-marquee-section[data-marquee-speed="40"] .logos-marquee__track {
+  animation-duration: 40s;
+}
+
+.logos-marquee-section[data-marquee-speed="50"] .logos-marquee__track {
+  animation-duration: 50s;
+}
+
+.logos-marquee-section[data-marquee-speed="60"] .logos-marquee__track {
+  animation-duration: 60s;
+}
+
+.logos-marquee-section[data-marquee-speed="70"] .logos-marquee__track {
+  animation-duration: 70s;
+}
+
+.logos-marquee-section[data-marquee-speed="80"] .logos-marquee__track {
+  animation-duration: 80s;
+}
+
+.logos-marquee-section[data-marquee-speed="90"] .logos-marquee__track {
+  animation-duration: 90s;
+}
+
+.logos-marquee-section[data-marquee-speed="100"] .logos-marquee__track {
+  animation-duration: 100s;
+}
