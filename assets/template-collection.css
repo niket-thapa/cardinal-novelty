@@ -68,16 +68,25 @@
 }
 
 .collection__title.title-wrapper {
-  margin-bottom: 2.5rem;
+  margin-bottom: 2.6rem;
 }
 
 .collection__title .title:not(:only-child) {
   margin-bottom: 1rem;
 }
 
+@media screen and (min-width: 750px) {
+  .collection__title.title-wrapper {
+    margin-bottom: 3.8rem;
+  }
+}
+
 @media screen and (min-width: 990px) {
   .collection__title--desktop-slider .title {
     margin-bottom: 2.5rem;
+  }
+  .collection__title.title-wrapper {
+    margin-bottom: 5.2rem;
   }
 
   .collection__title.title-wrapper--self-padded-tablet-down {
@@ -94,6 +103,60 @@
   }
 }
 
+.collection__view-all {
+  padding-inline: 1.6rem;
+}
+
 .collection__view-all a:not(.link) {
-  margin-top: 1rem;
+  margin-top: 1.6rem;
+}
+
+.collection__view-all .button {
+  width: 100%;
+  max-width: 38rem;
+  padding-inline: 2rem;
+}
+
+@media screen and (min-width: 750px) {
+  .collection__view-all a:not(.link) {
+    margin-top: 3rem;
+  }
+}
+
+.collection-ship-info {
+  color: rgba(var(--color-foreground), 0.6);
+  font-size: 1.6rem;
+  line-height: 1.175;
+  padding-block: 0.2rem 0;
+}
+
+@media screen and (min-width: 750px) {
+  .collection-ship-info {
+    font-size: 1.8rem;
+    padding-block: 0.7rem 0.8rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .collection-ship-info {
+    font-size: 2rem;
+  }
+}
+
+.collection .grid.product-grid {
+  --grid-desktop-vertical-spacing: 2.8rem;
+  margin-top: 3.2rem;
+}
+
+@media screen and (min-width: 750px) {
+  .collection .grid.product-grid {
+    --grid-desktop-vertical-spacing: 4.2rem;
+    margin-top: 3.2rem;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .collection .grid.product-grid {
+    --grid-desktop-vertical-spacing: 5.4rem;
+  }
 }

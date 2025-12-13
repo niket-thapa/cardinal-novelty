@@ -89,33 +89,6 @@
             {%- if cart != empty -%}
               <div class="drawer__cart-items-wrapper">
                 <table class="cart-items" role="table">
-                  <thead role="rowgroup">
-                    <tr role="row">
-                      <th id="CartDrawer-ColumnProductImage" role="columnheader">
-                        <span class="visually-hidden">{{ 'sections.cart.headings.image' | t }}</span>
-                      </th>
-                      <th
-                        id="CartDrawer-ColumnProduct"
-                        class="caption-with-letter-spacing"
-                        scope="col"
-                        role="columnheader"
-                      >
-                        {{ 'sections.cart.headings.product' | t }}
-                      </th>
-                      <th
-                        id="CartDrawer-ColumnTotal"
-                        class="right caption-with-letter-spacing"
-                        scope="col"
-                        role="columnheader"
-                      >
-                        {{ 'sections.cart.headings.total' | t }}
-                      </th>
-                      <th id="CartDrawer-ColumnQuantity" role="columnheader">
-                        <span class="visually-hidden">{{ 'sections.cart.headings.quantity' | t }}</span>
-                      </th>
-                    </tr>
-                  </thead>
-
                   <tbody role="rowgroup">
                     {%- for item in cart.items -%}
                       <tr
@@ -154,26 +127,7 @@
                             {{- item.product.title | escape -}}
                           </a>
 
-                          {%- if item.original_price != item.final_price -%}
-                            <div class="cart-item__discounted-prices">
-                              <span class="visually-hidden">
-                                {{ 'products.product.price.regular_price' | t }}
-                              </span>
-                              <s class="cart-item__old-price product-option">
-                                {{- item.original_price | money -}}
-                              </s>
-                              <span class="visually-hidden">
-                                {{ 'products.product.price.sale_price' | t }}
-                              </span>
-                              <strong class="cart-item__final-price product-option">
-                                {{ item.final_price | money }}
-                              </strong>
-                            </div>
-                          {%- else -%}
-                            <div class="product-option">
-                              {{ item.original_price | money }}
-                            </div>
-                          {%- endif -%}
+                          <div class="caption light">SKU: {{ item.product.selected_or_first_available_variant.sku }}</div>
 
                           {%- if item.product.has_only_default_variant == false
                             or item.properties.size != 0
@@ -216,7 +170,32 @@
                               {%- endfor -%}
                             </dl>
 
-                            <p class="product-option">{{ item.selling_plan_allocation.selling_plan.name }}</p>
+                            {% if item.selling_plan_allocation.selling_plan.name != blank %}
+                              <p class="product-option">
+                                {{ item.selling_plan_allocation.selling_plan.name }}
+                              </p>
+                            {% endif %}
+                          {%- endif -%}
+
+                          {%- if item.original_price != item.final_price -%}
+                            <div class="cart-item__price cart-item__discounted-prices">
+                              <span class="visually-hidden">
+                                {{ 'products.product.price.regular_price' | t }}
+                              </span>
+                              <s class="cart-item__old-price product-option">
+                                {{- item.original_price | money -}}
+                              </s>
+                              <span class="visually-hidden">
+                                {{ 'products.product.price.sale_price' | t }}
+                              </span>
+                              <strong class="cart-item__final-price product-option">
+                                {{ item.final_price | money }}
+                              </strong>
+                            </div>
+                          {%- else -%}
+                            <div class="cart-item__price product-option">
+                              {{ item.original_price | money }}
+                            </div>
                           {%- endif -%}
 
                           <ul
@@ -297,9 +276,7 @@
                                         | escape
                                       -}}
                                     </span>
-                                    <span class="svg-wrapper">
-                                      {{- 'icon-minus.svg' | inline_asset_content -}}
-                                    </span>
+                                    <span>-</span>
                                   </button>
                                   <input
                                     class="quantity__input"
@@ -338,9 +315,7 @@
                                         | escape
                                       -}}
                                     </span>
-                                    <span class="svg-wrapper">
-                                      {{- 'icon-plus.svg' | inline_asset_content -}}
-                                    </span>
+                                    <span>+</span>
                                   </button>
                                 </quantity-input>
                               </div>
@@ -350,16 +325,14 @@
                               >
                                 <button
                                   type="button"
-                                  class="button button--tertiary cart-remove-button"
+                                  class="btn-text cart-remove-button"
                                   aria-label="{{ 'sections.cart.remove_title' | t: title: item.title | escape }}"
                                   data-variant-id="{{ item.variant.id }}"
                                   {% if item.instructions and item.instructions.can_remove == false %}
                                     class="hidden"
                                   {% endif %}
                                 >
-                                  <span class="svg-wrapper">
-                                    {{- 'icon-remove.svg' | inline_asset_content -}}
-                                  </span>
+                                  Remove
                                 </button>
                               </cart-remove-button>
                             </div>
@@ -518,7 +491,7 @@
             <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
           </div>
 
-          <small class="tax-note caption-large rte">
+          <div class="tax-note rte">
             {%- if cart.duties_included and cart.taxes_included -%}
               {%- if shop.shipping_policy.body == blank -%}
                 {{ 'sections.cart.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
@@ -556,7 +529,7 @@
                 }}
               {%- endif -%}
             {%- endif -%}
-          </small>
+          </div>
         </div>
 
         <!-- CTAs -->
@@ -572,6 +545,9 @@
               disabled
             {% endif %}
           >
+                <span class="svg-wrapper">
+                  {{- 'icon-lock.svg' | inline_asset_content -}}
+                </span>
             {{ 'sections.cart.checkout' | t }}
           </button>
         </div>

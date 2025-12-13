@@ -37,7 +37,7 @@
   .banner--content-align-left.banner--desktop-transparent .banner__box,
   .banner--content-align-right.banner--desktop-transparent .banner__box,
   .banner--medium.banner--desktop-transparent .banner__box {
-    max-width: 68rem;
+    max-width: 80rem;
   }
 }
 
@@ -45,37 +45,47 @@
   clip-path: inset(0px);
 }
 
-.banner__media.animate--zoom-in > img:not(.zoom):not(.deferred-media__poster-button),
-.banner__media.animate--zoom-in > svg:not(.zoom):not(.deferred-media__poster-button) {
+.banner__media.animate--zoom-in
+  > img:not(.zoom):not(.deferred-media__poster-button),
+.banner__media.animate--zoom-in
+  > svg:not(.zoom):not(.deferred-media__poster-button) {
   position: fixed;
   height: 100vh;
 }
 
 @media screen and (max-width: 749px) {
   .banner--small.banner--mobile-bottom:not(.banner--adapt) .banner__media,
-  .banner--small.banner--stacked:not(.banner--mobile-bottom):not(.banner--adapt) > .banner__media {
+  .banner--small.banner--stacked:not(.banner--mobile-bottom):not(.banner--adapt)
+    > .banner__media {
     height: 28rem;
   }
 
   .banner--medium.banner--mobile-bottom:not(.banner--adapt) .banner__media,
-  .banner--medium.banner--stacked:not(.banner--mobile-bottom):not(.banner--adapt) > .banner__media {
+  .banner--medium.banner--stacked:not(.banner--mobile-bottom):not(
+      .banner--adapt
+    )
+    > .banner__media {
     height: 34rem;
   }
 
   .banner--large.banner--mobile-bottom:not(.banner--adapt) .banner__media,
-  .banner--large.banner--stacked:not(.banner--mobile-bottom):not(.banner--adapt) > .banner__media {
+  .banner--large.banner--stacked:not(.banner--mobile-bottom):not(.banner--adapt)
+    > .banner__media {
     height: 39rem;
   }
 
-  .banner--small:not(.banner--mobile-bottom):not(.banner--adapt) .banner__content {
+  .banner--small:not(.banner--mobile-bottom):not(.banner--adapt)
+    .banner__content {
     min-height: 28rem;
   }
 
-  .banner--medium:not(.banner--mobile-bottom):not(.banner--adapt) .banner__content {
+  .banner--medium:not(.banner--mobile-bottom):not(.banner--adapt)
+    .banner__content {
     min-height: 34rem;
   }
 
-  .banner--large:not(.banner--mobile-bottom):not(.banner--adapt) .banner__content {
+  .banner--large:not(.banner--mobile-bottom):not(.banner--adapt)
+    .banner__content {
     min-height: 39rem;
   }
 }
@@ -90,7 +100,7 @@
   }
 
   .banner--medium:not(.banner--adapt) {
-    min-height: 56rem;
+    min-height: 50rem;
   }
 
   .banner--large:not(.banner--adapt) {
@@ -220,34 +230,76 @@
 
 @media screen and (max-width: 749px) {
   .banner--mobile-bottom .banner__media,
-  .banner--stacked:not(.banner--mobile-bottom) .banner__media {
+  .banner--mobile-content-below .banner__media,
+  .banner--stacked:not(.banner--mobile-bottom):not(
+      .banner--mobile-content-below
+    )
+    .banner__media {
     position: relative;
+  }
+
+  /* Aspect ratio 360/300 for banner media when content is below */
+  .banner--mobile-content-below .banner__media {
+    aspect-ratio: 360 / 300;
+    height: auto;
+    width: 100%;
+  }
+
+  .banner--mobile-content-below .banner__media img,
+  .banner--mobile-content-below .banner__media svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .banner--medium:not(.banner--mobile-bottom):not(
+      .banner--adapt
+    ).banner--mobile-content-below
+    .banner__content {
+    min-height: 0;
+  }
+
+  /* Set foreground color for text visibility on white background */
+  .banner--mobile-content-below .banner__box {
+    --color-foreground: 17, 17, 17;
+    padding: 20px 16px;
   }
 
   .banner--stacked.banner--adapt .banner__content {
     height: auto;
   }
 
-  .banner:not(.banner--mobile-bottom):not(.email-signup-banner) .banner__box {
+  .banner:not(.banner--mobile-bottom):not(.banner--mobile-content-below):not(
+      .email-signup-banner
+    )
+    .banner__box {
     background: transparent;
   }
 
-  .banner:not(.banner--mobile-bottom) .banner__box {
+  .banner:not(.banner--mobile-bottom):not(.banner--mobile-content-below)
+    .banner__box {
     border: none;
     border-radius: 0;
     box-shadow: none;
   }
 
-  .banner:not(.banner--mobile-bottom) .button--secondary {
+  .banner:not(.banner--mobile-bottom):not(.banner--mobile-content-below)
+    .button--secondary {
     --alpha-button-background: 0;
   }
 
-  .banner--stacked:not(.banner--mobile-bottom):not(.banner--adapt) .banner__content {
+  .banner--stacked:not(.banner--mobile-bottom):not(
+      .banner--mobile-content-below
+    ):not(.banner--adapt)
+    .banner__content {
     position: absolute;
     height: auto;
   }
 
-  .banner--stacked.banner--adapt:not(.banner--mobile-bottom) .banner__content {
+  .banner--stacked.banner--adapt:not(.banner--mobile-bottom):not(
+      .banner--mobile-content-below
+    )
+    .banner__content {
     max-height: 100%;
     overflow: hidden;
     position: absolute;
@@ -332,8 +384,15 @@
     order: 2;
   }
 
-  .banner:not(.banner--mobile-bottom) .field__input,
-  .banner--mobile-bottom:not(.banner--stacked) .banner__box.color-scheme-1 {
+  .banner--mobile-content-below:not(.banner--stacked) .banner__content {
+    order: 2;
+  }
+
+  .banner:not(.banner--mobile-bottom):not(.banner--mobile-content-below)
+    .field__input,
+  .banner--mobile-bottom:not(.banner--stacked) .banner__box.color-scheme-1,
+  .banner--mobile-content-below:not(.banner--stacked)
+    .banner__box.color-scheme-1 {
     background: transparent;
   }
 }
@@ -359,7 +418,7 @@
   }
 
   .banner--desktop-transparent .banner__box {
-    padding: 4rem 0;
+    padding: 0;
     background: transparent;
     max-width: 89rem;
     border: none;
@@ -378,14 +437,16 @@
 
 @media screen and (max-width: 749px) {
   .banner--mobile-bottom::after,
-  .banner--mobile-bottom .banner__media::after {
+  .banner--mobile-bottom .banner__media::after,
+  .banner--mobile-content-below::after,
+  .banner--mobile-content-below .banner__media::after {
     display: none;
   }
 }
 
 .banner::after,
 .banner__media::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   background: #000000;
@@ -447,6 +508,13 @@
   gap: 1rem;
   max-width: 45rem;
   word-break: break-word;
+  justify-content: center;
+  width: 100%;
+}
+
+.banner__box .button {
+  width: 100%;
+  max-width: 400px;
 }
 
 @media screen and (max-width: 749px) {
@@ -488,5 +556,124 @@
   .banner--desktop-transparent .inline-richtext a:hover,
   .banner--desktop-transparent .rte a:hover {
     color: currentColor;
+  }
+
+  .banner__box > * + * {
+    margin-block-start: 3.5rem;
+  }
+
+  .banner__box > * + .banner__buttons {
+    margin-block-start: 4.5rem;
+  }
+}
+
+/* Button with star style */
+.banner__text.button-with-star {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.banner__text-button-with-star {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding-block: 1rem;
+  padding-inline: 1.2rem;
+  min-height: 4.2rem;
+  border: 0.1rem solid #ffc025;
+  border-radius: 100rem;
+  gap: 1.2rem;
+}
+
+.banner__text-button-with-star p {
+  margin: 0;
+  width: auto;
+  height: auto;
+  font-family: "Work Sans", sans-serif;
+  font-style: normal;
+  font-weight: 600;
+  font-size: 1.6rem;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: capitalize;
+  color: #ffc025;
+}
+
+.banner__text-button-star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  flex-shrink: 0;
+  color: #ffc025;
+  flex: none;
+  flex-grow: 0;
+}
+
+.banner__text-button-star:first-child {
+  order: 0;
+  margin: 0 -0.1rem;
+}
+
+.banner__text-button-star:last-child {
+  order: 2;
+}
+
+.banner__text-button-star .svg-wrapper {
+  width: 1.8rem;
+  height: 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffc025;
+}
+
+.banner__text-button-star .svg-wrapper svg {
+  width: 1.8rem;
+  height: 1.8rem;
+  color: #ffc025;
+}
+
+@media screen and (max-width: 749px) {
+  .banner__box > * + * {
+    margin-block-start: 1.2rem;
+  }
+
+  .banner__text-button-with-star {
+    padding-block: 0.9rem;
+    padding-inline: 1rem;
+    max-width: 32.8rem;
+    min-height: 3.8rem;
+    align-self: stretch;
+    gap: 0.5rem;
+  }
+
+  .banner__text-button-with-star p {
+    font-size: 1.4rem;
+    min-height: 0.9rem;
+    color: #111111;
+    margin: 0 auto;
+  }
+
+  .banner__text-button-star {
+    margin: 0 auto;
+  }
+
+  .banner__text-button-star:first-child {
+    margin: 0 -0.1rem;
+  }
+
+  .banner--mobile-content-below .banner__buttons {
+    padding-block-end: 1.1rem;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .banner__text-button-with-star {
+    gap: 2rem;
   }
 }

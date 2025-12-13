@@ -1,0 +1,164 @@
+{% comment %}
+  Renders breadcrumb navigation for the current page.
+
+  Usage:
+  {% render 'breadcrumbs' %}
+
+  Optional parameters:
+  - separator: {String} Custom separator between breadcrumb items (default: '/')
+  - show_home: {Boolean} Show home link (default: true)
+  - class: {String} Additional CSS classes
+{% endcomment %}
+
+{%- liquid
+  assign separator = separator | default: '/'
+  assign show_home = show_home | default: true
+  assign breadcrumb_class = 'breadcrumbs'
+  if class != blank
+    assign breadcrumb_class = breadcrumb_class | append: ' ' | append: class
+  endif
+-%}
+
+{{ 'component-breadcrumbs.css' | asset_url | stylesheet_tag }}
+
+<nav class="{{ breadcrumb_class }}" aria-label="{{ 'general.breadcrumbs.label' | t | default: 'Breadcrumbs' }}">
+  <ol class="breadcrumbs__list" itemscope itemtype="https://schema.org/BreadcrumbList">
+    {%- comment -%} Home {%- endcomment -%}
+    {%- if show_home -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <a href="{{ routes.root_url }}" class="breadcrumbs__link" itemprop="item">
+          <span itemprop="name">{{ 'general.breadcrumbs.home' | t | default: 'Home' }}</span>
+        </a>
+        <meta itemprop="position" content="1" />
+      </li>
+    {%- endif -%}
+
+    {%- comment -%} Collection Page {%- endcomment -%}
+    {%- if template contains 'collection' -%}
+      {%- if collection.title != blank -%}
+        <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <span class="breadcrumbs__text" itemprop="name">{{ collection.title | escape }}</span>
+          <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Product Page {%- endcomment -%}
+    {%- if template contains 'product' -%}
+      {%- if collection and collection.url != blank -%}
+        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <a href="{{ collection.url }}" class="breadcrumbs__link" itemprop="item">
+            <span itemprop="name">{{ collection.title | escape }}</span>
+          </a>
+          <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+        </li>
+      {%- endif -%}
+      {%- if product.title != blank -%}
+        <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <span class="breadcrumbs__text" itemprop="name">{{ product.title | escape }}</span>
+          <meta itemprop="position" content="{% if show_home %}{% if collection %}3{% else %}2{% endif %}{% else %}{% if collection %}2{% else %}1{% endif %}{% endif %}" />
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Page Template {%- endcomment -%}
+    {%- if template contains 'page' -%}
+      {%- if page.title != blank -%}
+        <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <span class="breadcrumbs__text" itemprop="name">{{ page.title | escape }}</span>
+          <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Blog Listing {%- endcomment -%}
+    {%- if template contains 'blog' and template != 'article' -%}
+      {%- if blog.title != blank -%}
+        <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <span class="breadcrumbs__text" itemprop="name">{{ blog.title | escape }}</span>
+          <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Article Page {%- endcomment -%}
+    {%- if template contains 'article' -%}
+      {%- if blog and blog.url != blank -%}
+        <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <a href="{{ blog.url }}" class="breadcrumbs__link" itemprop="item">
+            <span itemprop="name">{{ blog.title | escape }}</span>
+          </a>
+          <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+        </li>
+      {%- endif -%}
+      {%- if article.title != blank -%}
+        <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <span class="breadcrumbs__text" itemprop="name">{{ article.title | escape }}</span>
+          <meta itemprop="position" content="{% if show_home %}{% if blog %}3{% else %}2{% endif %}{% else %}{% if blog %}2{% else %}1{% endif %}{% endif %}" />
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Search Results {%- endcomment -%}
+    {%- if template contains 'search' -%}
+      <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+        <span class="breadcrumbs__text" itemprop="name">
+          {{ 'general.search.title' | t | default: 'Search' }}
+          {%- if search.terms != blank -%}
+            : {{ search.terms | escape }}
+          {%- endif -%}
+        </span>
+        <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+      </li>
+    {%- endif -%}
+
+    {%- comment -%} Cart Page {%- endcomment -%}
+    {%- if template contains 'cart' -%}
+      <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+        <span class="breadcrumbs__text" itemprop="name">{{ 'sections.cart.title' | t | default: 'Cart' }}</span>
+        <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+      </li>
+    {%- endif -%}
+
+    {%- comment -%} Account Pages {%- endcomment -%}
+    {%- if template contains 'customers' -%}
+      <li class="breadcrumbs__item" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+        <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+        <a href="{{ routes.account_url }}" class="breadcrumbs__link" itemprop="item">
+          <span itemprop="name">{{ 'customer.account.title' | t | default: 'Account' }}</span>
+        </a>
+        <meta itemprop="position" content="{% if show_home %}2{% else %}1{% endif %}" />
+      </li>
+      {%- if template contains 'account' and template != 'customers/account' -%}
+        <li class="breadcrumbs__item breadcrumbs__item--current" itemprop="itemListElement" itemscope itemtype="https://schema.org/ListItem">
+          <span class="breadcrumbs__separator" aria-hidden="true">{{ separator }}</span>
+          <span class="breadcrumbs__text" itemprop="name">
+            {%- if template contains 'orders' -%}
+              {{ 'customer.orders.title' | t | default: 'Orders' }}
+            {%- elsif template contains 'addresses' -%}
+              {{ 'customer.addresses.title' | t | default: 'Addresses' }}
+            {%- elsif template contains 'login' -%}
+              {{ 'customer.login_page.title' | t | default: 'Login' }}
+            {%- elsif template contains 'register' -%}
+              {{ 'customer.register.title' | t | default: 'Register' }}
+            {%- elsif template contains 'reset_password' -%}
+              {{ 'customer.reset_password.title' | t | default: 'Reset Password' }}
+            {%- else -%}
+              {{ 'customer.account.title' | t | default: 'Account' }}
+            {%- endif -%}
+          </span>
+          <meta itemprop="position" content="{% if show_home %}3{% else %}2{% endif %}" />
+        </li>
+      {%- endif -%}
+    {%- endif -%}
+  </ol>
+</nav>

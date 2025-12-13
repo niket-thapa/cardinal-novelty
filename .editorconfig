@@ -1,0 +1,34 @@
+# EditorConfig is awesome: https://EditorConfig.org
+
+# Top-most EditorConfig file
+root = true
+
+# Liquid files - disable auto-formatting
+[*.liquid]
+# Don't format Liquid files as they have special syntax that formatters break
+# Set to preserve to maintain existing formatting
+insert_final_newline = true
+trim_trailing_whitespace = true
+charset = utf-8
+
+# CSS files
+[*.css]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# JavaScript files
+[*.js]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# JSON files
+[*.json]
+indent_style = space
+indent_size = 2
+insert_final_newline = true
+trim_trailing_whitespace = true
+

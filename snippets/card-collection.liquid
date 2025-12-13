@@ -8,12 +8,16 @@
   - extend_height: {Boolean} Card height extends to available container space. Default: false (optional)
   - wrapper_class: {String} Wrapper class for card (optional)
   - placeholder_image: {String} Placeholder image when collection is empty (optional)
+  - show_arrow: {Boolean} Show arrow icon. Default: false (optional)
 
   Usage:
   {% render 'card-collection' %}
 {% endcomment %}
 
 {%- liquid
+  if show_arrow == null
+    assign show_arrow = settings.collection_card_show_arrow
+  endif
   assign ratio = 1
   if card_collection.featured_image and media_aspect_ratio == 'portrait'
     assign ratio = 0.8
@@ -83,7 +87,7 @@
       {%- else -%}
         <div class="card__content">
           <div class="card__information">
-            <h3 class="card__heading">
+            <h3 class="card__heading font-gabarito-regular font-gabarito-regular">
               <a
                 {% if card_collection == blank %}
                   role="link" aria-disabled="true"
@@ -119,7 +123,7 @@
     {%- if card_collection != blank and card_style == 'card' or card_collection.featured_image -%}
       <div class="card__content">
         <div class="card__information">
-          <h3 class="card__heading">
+          <h3 class="card__heading font-gabarito-regular">
             <a
               {% if card_collection == blank %}
                 role="link" aria-disabled="true"
@@ -133,7 +137,15 @@
               {%- else -%}
                 {{ 'onboarding.collection_title' | t }}
               {%- endif -%}
-              {%- if card_collection.featured_image or card_collection.description == blank -%}
+              {%- liquid
+                assign show_arrow_condition = false
+                if show_arrow
+                  if card_collection.featured_image or card_collection.description == blank
+                    assign show_arrow_condition = true
+                  endif
+                endif
+              -%}
+              {%- if show_arrow_condition -%}
                 <span class="icon-wrap">
                   {{- 'icon-arrow.svg' | inline_asset_content -}}
                 </span>

@@ -1,0 +1,54 @@
+{% comment %}
+  Renders delivery info block
+
+  Accepts:
+  - block: {Object} passes in the block information.
+  - product: {Object} Product liquid object (optional)
+
+  Usage:
+  {% render 'delivery-info',
+    block: block,
+    product: product
+  %}
+{% endcomment %}
+{%- liquid
+  assign is_in_stock = true
+  assign bg_color = '#50ff41'
+  
+  if product != blank and product.selected_or_first_available_variant != blank
+    assign variant = product.selected_or_first_available_variant
+    
+    if variant.available == false
+      assign is_in_stock = false
+      assign bg_color = '#dc3545'
+    elsif variant.inventory_management == 'shopify' and variant.inventory_quantity <= 0
+      assign is_in_stock = false
+      assign bg_color = '#dc3545'
+    endif
+  endif
+
+  if is_in_stock
+    if block.settings.stock_info != blank
+      assign stock_info = block.settings.stock_info
+    else
+      assign stock_info = 'In Stock'
+    endif
+  else
+    if block.settings.out_of_stock_text != blank
+      assign stock_info = block.settings.out_of_stock_text
+    else
+      assign stock_info = 'Out of Stock'
+    endif
+  endif
+
+  if block.settings.delivery_info_text != blank
+    assign delivery_info_text = block.settings.delivery_info_text
+  else
+    assign delivery_info_text = 'Ships same day from our warehouse!'
+  endif
+-%}
+<div class="delivery-info-box" {{ block.shopify_attributes }} style="--bg-indicator: {{ bg_color }};">
+  <span class="stock-info">{{ stock_info }}</span>
+  <span class="delivery-info-text">{{ delivery_info_text }}</span>
+</div>
+

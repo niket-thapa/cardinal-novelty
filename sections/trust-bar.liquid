@@ -1,0 +1,119 @@
+{{ 'section-trust-bar.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign items_count = 0
+  if section.settings.show_price_tag
+    assign items_count = items_count | plus: 1
+  endif
+  if section.settings.show_truck
+    assign items_count = items_count | plus: 1
+  endif
+  if section.settings.show_factory
+    assign items_count = items_count | plus: 1
+  endif
+-%}
+
+{%- if items_count > 0 -%}
+  <div class="trust-bar-section color-{{ section.settings.color_scheme }} gradient" {{ section.shopify_attributes }}>
+    <div class="trust-bar-container">
+      <div class="trust-bar-track" aria-hidden="true">
+        {%- for i in (1..8) -%}
+          {%- if section.settings.show_price_tag -%}
+            <div class="trust-bar-item">
+              <span class="trust-bar-icon">
+                {{ 'icon-price-tag-bold.svg' | inline_asset_content }}
+              </span>
+              <span class="trust-bar-text">{{ section.settings.price_tag_text }}</span>
+            </div>
+          {%- endif -%}
+          {%- if section.settings.show_truck -%}
+            <div class="trust-bar-item">
+              <span class="trust-bar-icon">
+                {{ 'icon-truck-bold.svg' | inline_asset_content }}
+              </span>
+              <span class="trust-bar-text">{{ section.settings.truck_text }}</span>
+            </div>
+          {%- endif -%}
+          {%- if section.settings.show_factory -%}
+            <div class="trust-bar-item">
+              <span class="trust-bar-icon">
+                {{ 'icon-factory-bold.svg' | inline_asset_content }}
+              </span>
+              <span class="trust-bar-text">{{ section.settings.factory_text }}</span>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Trust Bar",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "t:sections.all.colors.label",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Price Tag"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_tag",
+      "label": "Show price tag",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "price_tag_text",
+      "label": "Price tag text",
+      "default": "Best Prices"
+    },
+    {
+      "type": "header",
+      "content": "Truck"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_truck",
+      "label": "Show truck",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "truck_text",
+      "label": "Truck text",
+      "default": "Fast Shipping"
+    },
+    {
+      "type": "header",
+      "content": "Factory"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_factory",
+      "label": "Show factory",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "factory_text",
+      "label": "Factory text",
+      "default": "Made in USA"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Trust Bar"
+    }
+  ]
+}
+{% endschema %}
+

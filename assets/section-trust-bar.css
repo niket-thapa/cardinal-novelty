@@ -1,0 +1,72 @@
+.trust-bar-section {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  border-block: 1px solid #9e9e9e;
+  padding-block: 2.7rem;
+}
+
+.trust-bar-container {
+  width: 100%;
+}
+
+.trust-bar-track {
+  display: flex;
+  gap: 5rem;
+  animation: trust-bar-scroll linear infinite;
+  will-change: transform;
+  animation-duration: 30s;
+}
+
+.trust-bar-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.trust-bar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  flex-shrink: 0;
+  color: currentColor;
+}
+
+.trust-bar-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.trust-bar-text {
+  font-family: var(--font-gabarito-family);
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: currentColor;
+}
+
+@keyframes trust-bar-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media screen and (max-width: 749px) {
+  .trust-bar-track {
+    gap: 3.2rem;
+    animation-duration: 25s;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .trust-bar-track {
+    gap: 10rem;
+  }
+}

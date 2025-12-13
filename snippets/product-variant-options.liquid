@@ -92,7 +92,8 @@
       {{ input_dataset }}
     >
     <label for="{{ input_id }}">
-      {{ value -}}
+      <span class="variant-value">{{ value -}}</span>
+      <span class="variant-info-note">Ready-to-vend inside capsules</span>
       {{ label_unavailable }}
     </label>
   {%- elsif picker_type == 'dropdown' or picker_type == 'swatch_dropdown' -%}

@@ -5,6 +5,236 @@
   {% render 'header-mega-menu' %}
 {% endcomment %}
 
+<style>
+  .header__menu-item {
+    position: relative;
+  }
+
+  .header__menu-item::before {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    inset-block: -1.8rem;
+  }
+/* Mega Dropdown */
+.mega-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  padding: 1rem;
+  z-index: 1000;
+  max-width: 98rem;
+  margin-inline: auto;
+}
+
+.mega-dropdown::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 8px;
+  pointer-events: all;
+}
+
+details.mega-menu[open] .mega-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.mega-dropdown-container {
+  padding: 4rem;
+  background-color: white;
+  overflow: hidden;
+  max-width: 96rem;
+  margin-inline: auto;
+}
+
+.mega-dropdown-content {
+  display: grid;
+  grid-template-columns: 28.4% 28.4% 1fr;
+  gap: 3.2rem;
+}
+
+.mega-dropdown-content--columns-2 {
+  grid-template-areas: 'first second third';
+}
+
+/* Mega Column */
+.mega-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.mega-dropdown-content--columns-2 .mega-column:nth-child(2) {
+  grid-area: third;
+}
+
+@media screen and (min-width: 990px) {
+  .mega-dropdown-content--columns-2 .mega-column:nth-child(2),
+  .mega-column:nth-child(3n) {
+    padding-inline-start: 6.4rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .mega-dropdown-content--columns-2 .mega-column:nth-child(2)::before,
+  .mega-column:nth-child(3n)::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 1.6rem;
+    width: 1px;
+    background: #9E9E9E;
+  }
+}
+
+.mega-column-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.mega-column-link:hover {
+  transform: translateY(-2px);
+}
+
+.mega-column-image {
+  position: relative;
+  width: 100%;
+  padding-bottom: 122%;
+  background-color: #f0f0f0;
+  overflow: hidden;
+  border-radius: 1rem;
+}
+
+.mega-column-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mega-column-image.placeholder-bg {
+  background: linear-gradient(135deg, #AE1316 0%, #9d1214 100%);
+}
+
+.placeholder-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.mega-column-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 2rem 0 1.8rem;
+  font-size: 2.4rem;
+  gap: 1rem;
+  font-weight: 700;
+  color: rgba(var(--color-foreground), 1);
+  transition: color 0.2s ease;
+}
+
+.mega-column-link:hover .mega-column-title {
+  color: rgba(var(--color-button), 1);
+}
+
+.mega-column-link .icon-arrow {
+  width: 1.95rem;
+  height: auto;
+  /* opacity: 0;
+  transform: translateX(-10px); */
+  transition: transform var(--duration-short) ease;
+  margin-block: 0.5rem;
+}
+
+.mega-column-link:hover .icon-arrow {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Sub Links */
+.mega-sub-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.mega-sub-links li a {
+  color: rgba(var(--color-foreground), 1);
+  text-decoration: none;
+  font-size: 1.8rem;
+  font-weight: 400;
+  display: block;
+  padding: 0.4rem 0;
+  transition: color var(--duration-short) ease, padding-left var(--duration-short) ease;
+}
+
+.mega-sub-links li a:hover {
+  color: rgba(var(--color-button), 1);
+  padding-left: 0.4rem;
+}
+
+/* Responsive Design */
+@media (max-width: 989px) {
+  .mega-dropdown-content {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 749px) {
+  .mega-dropdown {
+    position: static;
+    transform: none;
+    padding-top: 0;
+    border-radius: 0;
+  }
+  
+  .mega-dropdown::before {
+    display: none;
+  }
+  
+  .mega-dropdown-content {
+    grid-template-columns: 1fr;
+  }
+  
+  details.mega-menu[open] .mega-dropdown {
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* Accessibility */
+.mega-column-link:focus,
+.mega-sub-links a:focus {
+  outline: 2px solid #c41e3a;
+  outline-offset: 2px;
+}
+</style>
+
 <nav class="header__inline-menu">
   <ul class="list-menu list-menu--inline" role="list">
     {%- for link in section.settings.menu.links -%}
@@ -15,6 +245,9 @@
               <summary
                 id="HeaderMenu-{{ link.handle }}"
                 class="header__menu-item list-menu__item link focus-inset"
+                {% if link.url != blank %}
+                  data-href="{{ link.url }}"
+                {% endif %}
               >
                 <span
                   {%- if link.child_active %}
@@ -25,48 +258,47 @@
                 </span>
                 {{- 'icon-caret.svg' | inline_asset_content -}}
               </summary>
-              <div
-                id="MegaMenu-Content-{{ forloop.index }}"
-                class="mega-menu__content color-{{ section.settings.menu_color_scheme }} gradient motion-reduce global-settings-popup"
-                tabindex="-1"
-              >
-                <ul
-                  class="mega-menu__list page-width{% if link.levels == 1 %} mega-menu__list--condensed{% endif %}"
-                  role="list"
-                >
-                  {%- for childlink in link.links -%}
-                    <li>
-                      <a
-                        id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}"
-                        href="{{ childlink.url }}"
-                        class="mega-menu__link mega-menu__link--level-2 link{% if childlink.current %} mega-menu__link--active{% endif %}"
-                        {% if childlink.current %}
-                          aria-current="page"
-                        {% endif %}
-                      >
-                        {{ childlink.title | escape }}
-                      </a>
-                      {%- if childlink.links != blank -%}
-                        <ul class="list-unstyled" role="list">
-                          {%- for grandchildlink in childlink.links -%}
-                            <li>
-                              <a
-                                id="HeaderMenu-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                                href="{{ grandchildlink.url }}"
-                                class="mega-menu__link link{% if grandchildlink.current %} mega-menu__link--active{% endif %}"
-                                {% if grandchildlink.current %}
-                                  aria-current="page"
-                                {% endif %}
+              <div class="mega-dropdown">
+                <div class="mega-dropdown-container">
+                  {%- assign column_count = link.links.size -%}
+                  <div class="mega-dropdown-content mega-dropdown-content--columns-{{ column_count }}">
+                    {%- for childlink in link.links -%}
+                      <div class="mega-column mega-column--{{ forloop.index }} mega-column-{{ column_count }}">
+                        <a href="{{ childlink.url }}" class="mega-column-link">
+                          {% if childlink.object.featured_image %}
+                            <div class="mega-column-image">
+                              <img 
+                                src="{{ childlink.object.featured_image | img_url: '400x' }}" 
+                                alt="{{ childlink.title }}"
+                                loading="lazy"
                               >
-                                {{ grandchildlink.title | escape }}
-                              </a>
-                            </li>
-                          {%- endfor -%}
-                        </ul>
-                      {%- endif -%}
-                    </li>
-                  {%- endfor -%}
-                </ul>
+                              <div class="placeholder-overlay">PLACEHOLDER</div>
+                            </div>
+                          {% else %}
+                            <div class="mega-column-image placeholder-bg">
+                              <div class="placeholder-overlay">PLACEHOLDER</div>
+                            </div>
+                          {% endif %}
+                          
+                          <h3 class="mega-column-title">
+                            {{ childlink.title }}
+                            {{- 'icon-arrow.svg' | inline_asset_content -}}
+                          </h3>
+                        </a>
+                        
+                        {%- if childlink.links != blank -%}
+                          <ul class="mega-sub-links">
+                            {%- for grandchildlink in childlink.links -%}
+                              <li>
+                                <a href="{{ grandchildlink.url }}">{{ grandchildlink.title }}</a>
+                              </li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                </div>
               </div>
             </details>
           </header-menu>

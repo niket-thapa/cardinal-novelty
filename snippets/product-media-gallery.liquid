@@ -177,7 +177,7 @@
     endif
   -%}
   {%- if is_not_limited_to_single_item
-    and media_count > 1
+    and media_count > 0
     and section.settings.gallery_layout contains 'thumbnail'
     or section.settings.mobile_thumbnails == 'show'
   -%}

@@ -13,19 +13,48 @@
   "sections": {
     "footer": {
       "type": "footer",
+      "blocks": {
+        "brand_information_F9Gtme": {
+          "type": "brand_information",
+          "settings": {
+            "show_social": false
+          }
+        },
+        "menu_RPmawG": {
+          "type": "menu",
+          "settings": {
+            "title": "Shop",
+            "menu": "main-menu"
+          }
+        },
+        "contact_8FVghV": {
+          "type": "contact",
+          "settings": {
+            "title": "Contact Us",
+            "phone": "410-325-2121",
+            "email": "",
+            "address": "6801 Quad Ave, Baltimore, MD 21237"
+          }
+        }
+      },
+      "block_order": [
+        "brand_information_F9Gtme",
+        "menu_RPmawG",
+        "contact_8FVghV"
+      ],
       "settings": {
         "color_scheme": "scheme-1",
         "newsletter_enable": true,
-        "newsletter_heading": "Subscribe to our emails",
-        "enable_follow_on_shop": true,
-        "show_social": true,
-        "enable_country_selector": true,
-        "enable_language_selector": true,
-        "payment_enable": true,
-        "show_policy": true,
+        "newsletter_heading": "Get alerts on sales &amp; new items!",
+        "enable_follow_on_shop": false,
+        "show_social": false,
+        "enable_country_selector": false,
+        "enable_language_selector": false,
+        "payment_enable": false,
+        "show_policy": false,
         "margin_top": 0,
-        "padding_top": 36,
-        "padding_bottom": 36
+        "padding_top": 60,
+        "padding_bottom": 0
       }
     }
   },

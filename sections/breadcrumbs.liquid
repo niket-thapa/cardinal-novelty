@@ -1,0 +1,67 @@
+{% comment %}
+  Renders breadcrumb navigation section.
+
+  Usage:
+  Add this section from the theme editor to any template.
+{% endcomment %}
+
+{{ 'component-breadcrumbs.css' | asset_url | stylesheet_tag }}
+
+<div class="breadcrumbs-section section-{{ section.id }}-padding{% unless section.settings.full_width %} page-width{% endunless %}">
+  <div class="breadcrumbs-wrapper">
+    {% render 'breadcrumbs',
+      separator: section.settings.separator,
+      show_home: section.settings.show_home,
+      class: section.settings.class
+    %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Breadcrumb Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_home",
+      "default": true,
+      "label": "Show home link"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "default": "/",
+      "label": "Separator",
+      "info": "Character or symbol to separate breadcrumb items (e.g., /, >, →)"
+    },
+    {
+      "type": "text",
+      "id": "class",
+      "label": "Custom CSS class",
+      "info": "Optional additional CSS class for styling"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "default": false,
+      "label": "Full width",
+      "info": "Remove page width constraint"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs"
+    }
+  ]
+}
+{% endschema %}

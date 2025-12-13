@@ -1,0 +1,44 @@
+{% comment %}
+  Renders order by phone block
+
+  Accepts:
+  - block: {Object} passes in the block information.
+
+  Usage:
+  {% render 'order-by-phone',
+    block: block
+  %}
+{% endcomment %}
+{%- liquid
+  if block.settings.title != blank
+    assign phone_title = block.settings.title
+  else
+    assign phone_title = 'Or call us to order by phone:'
+  endif
+
+  if block.settings.phone_number != blank
+    assign phone_number = block.settings.phone_number
+  else
+    assign phone_number = '410-325-2121'
+  endif
+
+  if block.settings.phone_display != blank
+    assign phone_display = block.settings.phone_display
+  else
+    assign phone_display = 'CALL 410-325-2121'
+  endif
+-%}
+<div class="product-oder-by-phone center" {{ block.shopify_attributes }}>
+  <div class="order-phone-title">{{ phone_title }}</div>
+  <a href="tel:{{ phone_number }}" class="header__phone-button">
+    <span class="header__phone-icon">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          d="M14.4247 11.4451L12.5197 11.2276C12.2957 11.2013 12.0687 11.2261 11.8556 11.3001C11.6426 11.3741 11.4491 11.4955 11.2897 11.6551L9.90973 13.0351C7.78077 11.952 6.05027 10.2215 4.96723 8.09257L6.35473 6.70507C6.67723 6.38257 6.83473 5.93257 6.78223 5.47507L6.56473 3.58507C6.52236 3.21914 6.34683 2.88159 6.07157 2.63677C5.79632 2.39194 5.4406 2.25697 5.07223 2.25757H3.77473C2.92723 2.25757 2.22223 2.96257 2.27473 3.81007C2.67223 10.2151 7.79473 15.3301 14.1922 15.7276C15.0397 15.7801 15.7447 15.0751 15.7447 14.2276V12.9301C15.7522 12.1726 15.1822 11.5351 14.4247 11.4451Z"
+          fill="currentColor" />
+      </svg>
+    </span>
+    <span class="header__phone-number">{{ phone_display }}</span>
+  </a>
+</div>
+

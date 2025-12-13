@@ -12,11 +12,10 @@
     "main": {
       "type": "main-product",
       "blocks": {
-        "vendor": {
-          "type": "text",
+        "sku_z8LwHg": {
+          "type": "sku",
           "settings": {
-            "text": "{{ product.vendor }}",
-            "text_style": "uppercase"
+            "text_style": "body"
           }
         },
         "title": {
@@ -34,59 +33,80 @@
             "swatch_shape": "circle"
           }
         },
+        "delivery_info_BKhw4Q": {
+          "type": "delivery-info",
+          "settings": {
+            "stock_info": "In Stock",
+            "delivery_info_text": "Ships same day from our warehouse!"
+          }
+        },
         "quantity_selector": {
           "type": "quantity_selector",
+          "disabled": true,
           "settings": {}
         },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
-            "show_dynamic_checkout": true,
-            "show_gift_card_recipient": true
+            "show_dynamic_checkout": false,
+            "show_gift_card_recipient": false
           }
         },
         "description": {
           "type": "description",
           "settings": {}
         },
-        "share": {
-          "type": "share",
+        "collapsible_tab_mCCCGt": {
+          "type": "collapsible_tab",
           "settings": {
-            "share_label": "Share"
+            "heading": "Shipping & Returns",
+            "icon": "none",
+            "content": "<p>Shipping: <br/>FREE SHIPPING when you buy 12 or more. Promo applies to all products with this notice.<br/><br/>Availability:<br/>Usually ships within 1-2 business days Note: Products receive occasional updates and may differ slightly from photo.<br/><br/>Returns: <br/>Free returns within 30 days of receipt of your order. Some items are not eligible for return.</p>",
+            "page": ""
+          }
+        },
+        "order_by_phone_rC7PgQ": {
+          "type": "order-by-phone",
+          "settings": {
+            "title": "Or call us to order by phone:",
+            "phone_number": "410-325-2121",
+            "phone_display": "CALL 410-325-2121"
           }
         }
       },
       "block_order": [
-        "vendor",
+        "sku_z8LwHg",
         "title",
         "price",
         "variant_picker",
+        "delivery_info_BKhw4Q",
         "quantity_selector",
         "buy_buttons",
         "description",
-        "share"
+        "collapsible_tab_mCCCGt",
+        "order_by_phone_rC7PgQ"
       ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
-        "media_size": "large",
+        "media_size": "medium",
         "constrain_to_viewport": true,
         "media_fit": "contain",
-        "gallery_layout": "stacked",
-        "mobile_thumbnails": "hide",
+        "gallery_layout": "thumbnail",
+        "mobile_thumbnails": "show",
         "media_position": "left",
         "image_zoom": "lightbox",
         "hide_variants": true,
         "enable_video_looping": false,
-        "padding_top": 36,
+        "padding_top": 52,
         "padding_bottom": 12
       }
     },
     "related-products": {
       "type": "related-products",
       "settings": {
-        "heading": "You may also like",
-        "heading_size": "h2",
+        "heading": "<strong>You May Also Like</strong>",
+        "heading_size": "h0",
         "products_to_show": 4,
         "columns_desktop": 4,
         "columns_mobile": "2",
@@ -99,10 +119,21 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
+    },
+    "in_house_assembled_Bca4Ny": {
+      "type": "in-house-assembled",
+      "name": "In-House Assembled",
+      "settings": {
+        "color_scheme": "",
+        "show_flag": true,
+        "heading": "Assembled In-House in the USA",
+        "description": "<p>All orders are assembled in-house and shipped from our 100,000 square foot warehouse in Baltimore, Maryland.</p>"
+      }
     }
   },
   "order": [
     "main",
-    "related-products"
+    "related-products",
+    "in_house_assembled_Bca4Ny"
   ]
 }

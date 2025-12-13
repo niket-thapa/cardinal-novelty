@@ -675,6 +675,12 @@
         "default": "scheme-2"
       },
       {
+        "type": "checkbox",
+        "id": "collection_card_show_arrow",
+        "default": false,
+        "label": "Show arrow"
+      },
+      {
         "type": "header",
         "content": "t:settings_schema.global.settings.header__border.content"
       },
@@ -697,6 +703,12 @@
         "unit": "%",
         "label": "t:settings_schema.global.settings.opacity.label",
         "default": 0
+      },
+      {
+        "type": "checkbox",
+        "id": "collection_card_rounded_full",
+        "default": false,
+        "label": "Rounded full"
       },
       {
         "type": "range",
