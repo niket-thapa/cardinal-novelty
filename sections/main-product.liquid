@@ -114,6 +114,7 @@
                     price_class: 'price--large'
                   -%}
                 </div>
+                
                 {%- if product.quantity_price_breaks_configured? -%}
                   <div class="volume-pricing-note" id="Volume-Note-{{ section.id }}">
                     <span>{{ 'products.product.volume_pricing.note' | t }}</span>
@@ -490,13 +491,39 @@
               {%- when 'variant_picker' -%}
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
               {%- when 'buy_buttons' -%}
-                {%- render 'buy-buttons',
-                  block: block,
-                  product: product,
-                  product_form_id: product_form_id,
-                  section_id: section.id,
-                  show_pickup_availability: true
+                {%- liquid
+                  # Check if this is a display-card template
+                  assign is_display_card_template = false
+                  if template.name == 'product.display-card' or template.suffix == 'display-card'
+                    assign is_display_card_template = true
+                  endif
+
+                  # Check if display card metafield exists (product data loaded via API)
+                  assign has_display_card_metafield = false
+                  if is_display_card_template
+                    assign display_card_metafield = product.metafields.custom.display_card
+                    if display_card_metafield != blank
+                      assign has_display_card_metafield = true
+                    endif
+                  endif
                 -%}
+                {%- if is_display_card_template and has_display_card_metafield -%}
+                  {%- render 'buy-buttons-display-card',
+                    block: block,
+                    product: product,
+                    product_form_id: product_form_id,
+                    section_id: section.id,
+                    show_pickup_availability: true
+                  %}
+                {%- else -%}
+                  {%- render 'buy-buttons',
+                    block: block,
+                    product: product,
+                    product_form_id: product_form_id,
+                    section_id: section.id,
+                    show_pickup_availability: true
+                  %}
+                {%- endif -%}
               {%- when 'rating' -%}
                 {%- if product.metafields.reviews.rating.value != blank -%}
                   <div class="rating-wrapper">
@@ -598,25 +625,27 @@
                                     limit: block.settings.products_per_page
                                     offset: continue
                                   -%}
-                                    <li>
-                                      {%- if block.settings.enable_quick_add -%}
-                                        {% assign quick_add = 'standard' %}
-                                      {%- else -%}
-                                        {% assign quick_add = 'none' %}
-                                      {%- endif -%}
-                                      {% render 'card-product',
-                                        card_product: product,
-                                        media_aspect_ratio: block.settings.image_ratio,
-                                        show_secondary_image: false,
-                                        lazy_load: false,
-                                        skip_styles: skip_card_product_styles,
-                                        quick_add: quick_add,
+                                    {%- if product.metafields.custom.hide_from_listings.value != true -%}
+                                      <li>
+                                        {%- if block.settings.enable_quick_add -%}
+                                          {% assign quick_add = 'standard' %}
+                                        {%- else -%}
+                                          {% assign quick_add = 'none' %}
+                                        {%- endif -%}
+                                        {% render 'card-product',
+                                          card_product: product,
+                                          media_aspect_ratio: block.settings.image_ratio,
+                                          show_secondary_image: false,
+                                          lazy_load: false,
+                                          skip_styles: skip_card_product_styles,
+                                          quick_add: quick_add,
                                         section_id: section.id,
                                         horizontal_class: true,
                                         horizontal_quick_add: true
                                       %}
-                                    </li>
-                                    {%- assign skip_card_product_styles = true -%}
+                                      </li>
+                                      {%- assign skip_card_product_styles = true -%}
+                                    {%- endif -%}
                                   {%- endfor -%}
                                 </ul>
                               </div>
@@ -690,6 +719,13 @@
                 {% render 'order-by-phone', block: block %}
               {%- when 'delivery-info' -%}
                 {% render 'delivery-info', block: block, product: product %}
+              {%- when 'display-card' -%}
+                {% render 'display-card',
+                block: block,
+                product: product,
+                product_form_id: product_form_id,
+                section: section
+                %}
             {%- endcase -%}
           {%- endfor -%}
           <a href="{{ product.url }}" class="link product__view-details animate-arrow">
@@ -2153,6 +2189,18 @@
           "label": "Delivery Info Text",
           "default": "Ships same day from our warehouse!",
           "info": "The delivery information text displayed below the stock info"
+        }
+      ]
+    },
+    {
+      "type": "display-card",
+      "name": "Display Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "storefront_access_token",
+          "label": "Storefront API Access Token",
+          "info": "Optional: Storefront API access token if required for API calls"
         }
       ]
     }

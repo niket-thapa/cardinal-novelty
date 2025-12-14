@@ -1,0 +1,59 @@
+{% comment %}
+Renders display card block
+
+Accepts:
+- block: {Object} Block information
+- product: {Object} Product liquid object (current product)
+- product_form_id: {String} Product form ID (required)
+- section: {Object} Section object (required)
+
+Usage:
+{% render 'display-card',
+block: block,
+product: product,
+product_form_id: product_form_id,
+section: section
+%}
+{% endcomment %}
+
+{%- liquid
+  # Get display card product GID from metafield
+  assign display_card_metafield = product.metafields.custom.display_card
+  
+  # Extract product ID from GID string (e.g., gid://shopify/Product/7484245409879)
+  assign display_card_product_id = null
+  if display_card_metafield != blank
+    assign metafield_value = display_card_metafield | strip
+    if metafield_value contains 'gid://shopify/Product/'
+      assign gid_parts = metafield_value | split: '/'
+      assign display_card_product_id = gid_parts | last
+    endif
+  endif
+-%}
+
+{%- if display_card_product_id != blank -%}
+  <div class="display-card-block" {{ block.shopify_attributes }}>
+    <div class="display-card-container">
+      <div class="display-card-loading">
+        {%- render 'loading-spinner', class: 'display-card-loading-spinner' -%}
+      </div>
+      <div class="display_loading_text">Loading display card</div>
+    </div>
+  </div>
+
+  <script>
+    window.displayCardData = window.displayCardData || {};
+    window.displayCardData = {
+      productId: {{ display_card_product_id | json }},
+      sectionId: {{ section.id | json }},
+      blockId: {{ block.id | json }}
+    };
+  </script>
+  <script src="{{ 'display-card-api.js' | asset_url }}" defer="defer"></script>
+
+  {{ 'component-display-card.css' | asset_url | stylesheet_tag }}
+{%- else -%}
+  <div class="display-card-error" {{ block.shopify_attributes }}>
+    <p>Display card product not found. Please check the metafield configuration.</p>
+  </div>
+{%- endif -%}

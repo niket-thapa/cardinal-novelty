@@ -91,6 +91,12 @@
                 <table class="cart-items" role="table">
                   <tbody role="rowgroup">
                     {%- for item in cart.items -%}
+                      {%- liquid
+                        assign hide_from_listings = false
+                        if item.product.metafields.custom.hide_from_listings.value == true
+                          assign hide_from_listings = true
+                        endif
+                      -%}
                       <tr
                         id="CartDrawer-Item-{{ item.index | plus: 1 }}"
                         class="cart-item{% if item.parent_relationship.parent != null %} cart-item__nested-line{% endif %}"
@@ -105,8 +111,13 @@
                           headers="CartDrawer-ColumnProductImage"
                         >
                           {% if item.image %}
-                            {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
-                            <a href="{{ item.url }}" class="cart-item__link" tabindex="-1" aria-hidden="true"> </a>
+                            {%- if hide_from_listings -%}
+                              {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
+                              <span class="cart-item__link" tabindex="-1" aria-hidden="true"> </span>
+                            {%- else -%}
+                              {% comment %} Leave empty space due to a:empty CSS display: none rule {% endcomment %}
+                              <a href="{{ item.url }}" class="cart-item__link" tabindex="-1" aria-hidden="true"> </a>
+                            {%- endif -%}
                             <img
                               class="cart-item__image"
                               src="{{ item.image | image_url: width: 300 }}"
@@ -123,9 +134,15 @@
                             <p class="caption-with-letter-spacing light">{{ item.product.vendor }}</p>
                           {%- endif -%}
 
-                          <a href="{{ item.url }}" class="cart-item__name h4 break">
-                            {{- item.product.title | escape -}}
-                          </a>
+                          {%- if hide_from_listings -%}
+                            <span class="cart-item__name h4 break">
+                              {{- item.product.title | escape -}}
+                            </span>
+                          {%- else -%}
+                            <a href="{{ item.url }}" class="cart-item__name h4 break">
+                              {{- item.product.title | escape -}}
+                            </a>
+                          {%- endif -%}
 
                           <div class="caption light">SKU: {{ item.product.selected_or_first_available_variant.sku }}</div>
 
