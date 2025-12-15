@@ -211,14 +211,36 @@
                   </div>
                 {%- endif -%}
               {%- when 'sku' -%}
+                {%- liquid
+                  assign current_variant = product.selected_or_first_available_variant
+                  assign variant_sku = current_variant.sku
+                  assign variant_barcode = current_variant.barcode
+                  assign has_sku = false
+                  assign has_barcode = false
+                  if variant_sku.size > 0
+                    assign has_sku = true
+                  endif
+                  if variant_barcode.size > 0
+                    assign has_barcode = true
+                  endif
+                  assign should_hide = true
+                  if has_sku or has_barcode
+                    assign should_hide = false
+                  endif
+                -%}
                 <p
-                  class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if product.selected_or_first_available_variant.sku.size == 0 %} visibility-hidden{% endif %}"
+                  class="product__sku{% if block.settings.text_style == 'uppercase' %} caption-with-letter-spacing{% elsif block.settings.text_style == 'subtitle' %} subtitle{% endif %}{% if should_hide %} visibility-hidden{% endif %}"
                   id="Sku-{{ section.id }}"
                   role="status"
                   {{ block.shopify_attributes }}
                 >
-                  <span class="sku_title">{{ 'products.product.sku' | t }}:</span>
-                  {{- product.selected_or_first_available_variant.sku -}}
+                  {%- if has_sku -%}
+                    <span class="sku_title">{{ 'products.product.sku' | t }}:</span>
+                    {{- variant_sku -}}
+                  {%- endif -%}
+                  {%- if has_barcode -%}
+                    {%- if has_sku -%}&nbsp;/&nbsp;{%- endif -%}UPC:&nbsp;{{- variant_barcode -}}
+                  {%- endif -%}
                 </p>
               {%- when 'custom_liquid' -%}
                 {{ block.settings.custom_liquid }}

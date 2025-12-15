@@ -82,8 +82,8 @@ if (!customElements.get("toy-capsule-api")) {
           featuredImage = product.featured_image;
         }
 
-        // Format price
-        const price = (variant.price / 100).toFixed(2);
+        // Format price (price from /products.json is already in dollars, not cents)
+        const price = parseFloat(variant.price);
         const formattedPrice = new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",

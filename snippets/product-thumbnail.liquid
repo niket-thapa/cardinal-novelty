@@ -57,7 +57,7 @@
     class="product__modal-opener product__modal-opener--{{ media.media_type }}"
     data-modal="#ProductModal-{{ modal_id }}"
   >
-    <span
+    {% comment %} <span
       class="product__media-icon motion-reduce quick-add-hidden{% if media.media_type == 'image' %} product__media-icon--{{ section.settings.image_zoom }}{% endif %}"
       aria-hidden="true"
     >
@@ -75,7 +75,7 @@
             {{- 'icon-zoom.svg' | inline_asset_content -}}
           </span>
       {% endcase %}
-    </span>
+    </span> {% endcomment %}
     {%- render 'loading-spinner' -%}
     <div class="product__media media media--transparent">
       {{
