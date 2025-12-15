@@ -60,6 +60,12 @@
             "page": ""
           }
         },
+        "toy_capsule_Ykey7M": {
+          "type": "toy-capsule",
+          "settings": {
+            "storefront_access_token": ""
+          }
+        },
         "order_by_phone": {
           "type": "order-by-phone",
           "settings": {
@@ -78,6 +84,7 @@
         "buy_buttons",
         "description",
         "collapsible_tab_shipping",
+        "toy_capsule_Ykey7M",
         "order_by_phone"
       ],
       "settings": {

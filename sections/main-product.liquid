@@ -726,6 +726,13 @@
                 product_form_id: product_form_id,
                 section: section
                 %}
+              {%- when 'toy-capsule' -%}
+                {% render 'toy-capsule',
+                block: block,
+                product: product,
+                product_form_id: product_form_id,
+                section: section
+                %}
             {%- endcase -%}
           {%- endfor -%}
           <a href="{{ product.url }}" class="link product__view-details animate-arrow">
@@ -2195,6 +2202,18 @@
     {
       "type": "display-card",
       "name": "Display Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "storefront_access_token",
+          "label": "Storefront API Access Token",
+          "info": "Optional: Storefront API access token if required for API calls"
+        }
+      ]
+    },
+    {
+      "type": "toy-capsule",
+      "name": "Toy Capsule",
       "settings": [
         {
           "type": "text",

@@ -1,0 +1,131 @@
+.toy-capsule-heading {
+  font-size: 2.6rem;
+  font-family: "Sofia Sans Extra Condensed";
+  font-weight: 800;
+  font-weight: bold;
+  text-transform: uppercase;
+  line-height: 1.154;
+  color: rgb(var(--color-foreground));
+  margin: 0 0 1.6rem;
+}
+
+@media screen and (max-width: 749px) {
+  .toy-capsule-heading {
+    font-size: 2rem;
+  }
+}
+
+/* Loading Spinner */
+.toy-capsule-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 4rem;
+  width: 100%;
+}
+
+.toy-capsule-loading-spinner {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+}
+
+.toy-capsule-loading-spinner.hidden {
+  display: none !important;
+}
+
+.toy-capsule-loading-spinner .spinner {
+  animation: rotator 1.4s linear infinite;
+  width: 100%;
+  height: 100%;
+}
+
+.toy-capsule-loading-spinner .path {
+  stroke-dasharray: 280;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  stroke: rgb(var(--color-foreground));
+  animation: dash 1.4s ease-in-out infinite;
+}
+
+@keyframes rotator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: 280;
+  }
+  50% {
+    stroke-dashoffset: 75;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 280;
+    transform: rotate(450deg);
+  }
+}
+
+.toy-capsule-item {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  padding: 1rem;
+  gap: 1.5rem;
+  border: 1px solid #dcdde6;
+  border-radius: 0.8rem;
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.toy-capsule-item:hover {
+  opacity: 0.8;
+}
+
+.toy-capsule-image-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.toy-capsule-image {
+  width: 100%;
+  border-radius: 0.8rem;
+  display: block;
+  height: auto;
+}
+
+.toy-capsule-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+}
+
+.toy-capsule-title {
+  font-family: "Sofia Sans Extra Condensed";
+  font-style: normal;
+  font-weight: 800;
+  font-size: 1.8rem;
+  line-height: 100%;
+  text-transform: uppercase;
+  color: rgb(var(--color-foreground));
+}
+
+.toy-capsule-price {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.2rem;
+  line-height: 100%;
+  color: rgb(var(--color-foreground));
+}
+
+.toy-capsule-error {
+  padding: 1rem;
+  text-align: center;
+  color: rgb(var(--color-foreground));
+}

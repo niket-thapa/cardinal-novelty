@@ -112,9 +112,13 @@ if (!customElements.get("display-card-api")) {
         const data = await response.json();
 
         if (data.products && data.products.length > 0) {
-          return data.products[0];
+          // Find the product with matching ID (not always at index 0)
+          const product = data.products.find(
+            (p) => p.id.toString() === productId.toString()
+          );
+          return product || null;
         }
-        return null;
+        return null; // Return null if no product found
       }
 
       async getCartQuantity(variantId) {

@@ -1,0 +1,55 @@
+{% comment %}
+Renders toy-capsule block
+
+Accepts:
+- block: {Object} Block information
+- product: {Object} Product liquid object (current product)
+- product_form_id: {String} Product form ID (required)
+- section: {Object} Section object (required)
+
+Usage:
+{% render 'toy-capsule',
+block: block,
+product: product,
+product_form_id: product_form_id,
+section: section
+%}
+{% endcomment %}
+
+{%- liquid
+  # Get toy-capsule product GID from metafield
+  assign toy_capsule_metafield = product.metafields.custom.in_capsule
+  
+  # Extract product ID from GID string (e.g., gid://shopify/Product/7484245409879)
+  assign toy_capsule_product_id = null
+  if toy_capsule_metafield != blank
+    assign metafield_value = toy_capsule_metafield | strip
+    if metafield_value contains 'gid://shopify/Product/'
+      assign gid_parts = metafield_value | split: '/'
+      assign toy_capsule_product_id = gid_parts | last
+    endif
+  endif
+-%}
+
+{{ 'component-toy-capsule.css' | asset_url | stylesheet_tag }}
+
+{%- if toy_capsule_product_id != blank -%}
+  <div class="toy-capsule-block" {{ block.shopify_attributes }}>
+    <div class="toy-capsule-container">
+      <div class="toy-capsule-heading">GET THIS TOY IN TOY CAPSULES</div>
+      <div class="toy-capsule-item-container">
+        <div class="toy-capsule-loading">
+          {%- render 'loading-spinner', class: 'toy-capsule-loading-spinner' -%}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.toyCapsuleData = window.toyCapsuleData || {};
+    window.toyCapsuleData = {
+      productId: {{ toy_capsule_product_id | json }}
+    };
+  </script>
+  <script src="{{ 'toy-capsule-api.js' | asset_url }}" defer="defer"></script>
+{%- endif -%}
