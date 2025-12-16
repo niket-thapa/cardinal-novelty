@@ -1,3 +1,8 @@
+.toy-capsule-block {
+  padding-block: 1.7rem;
+  border-block-start: 1px solid #9e9e9e;
+}
+
 .toy-capsule-heading {
   font-size: 2.6rem;
   font-family: "Sofia Sans Extra Condensed";
@@ -6,7 +11,7 @@
   text-transform: uppercase;
   line-height: 1.154;
   color: rgb(var(--color-foreground));
-  margin: 0 0 1.6rem;
+  margin: 0 0 1.2rem;
 }
 
 @media screen and (max-width: 749px) {

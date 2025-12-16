@@ -92,7 +92,7 @@
                 </div>
               </div>
             {%- when 'product' -%}
-              {%- if block.settings.product.metafields.custom.hide_from_listings.value != true -%}
+              {%- if block.settings.product.metafields.custom.hide_from_listings.value != true and block.settings.product.available -%}
                 {%- assign placeholder_image = 'product-apparel-' | append: placeholder_image_index -%}
                 {% render 'card-product',
                   card_product: block.settings.product,

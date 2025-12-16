@@ -1,0 +1,22 @@
+{%- doc -%}
+  Renders the pieces price per piece.
+
+  @param {number} price - The variant price (in cents).
+  @param {number} pieces - The number of pieces from metafield.
+
+  @example
+  {% render 'pieces-price', price: variant.price, pieces: variant.metafields.custom.pieces %}
+{%- enddoc -%}
+{%- if pieces != blank and pieces > 0 -%}
+  {%- liquid
+    assign pieces = pieces | times: 1.0
+    assign pieces_price = price | divided_by: pieces | floor
+    assign pieces_price_formatted = pieces_price | money
+  -%}
+  <small class="unit-price caption">
+    <span class="visually-hidden">{{ 'products.product.price.unit_price' | t }}</span>
+    <span class="price-item price-item--last">
+      ({{ pieces_price_formatted }}/piece)
+    </span>
+  </small>
+{%- endif -%}

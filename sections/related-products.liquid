@@ -37,7 +37,7 @@
       >
         {% assign skip_card_product_styles = false %}
         {% for recommendation in recommendations.products %}
-          {%- if recommendation.metafields.custom.hide_from_listings.value != true -%}
+          {%- if recommendation.metafields.custom.hide_from_listings.value != true and recommendation.available -%}
             <li class="grid__item">
               {% render 'card-product',
                 card_product: recommendation,

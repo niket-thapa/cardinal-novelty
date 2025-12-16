@@ -160,3 +160,7 @@
     --grid-desktop-vertical-spacing: 5.4rem;
   }
 }
+
+.featured_collection_product .grid__item:nth-child(4) ~ .grid__item {
+  display: none;
+}

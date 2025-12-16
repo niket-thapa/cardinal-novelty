@@ -111,6 +111,9 @@
       {%- if product.selected_or_first_available_variant.unit_price_measurement -%}
         {% render 'unit-price', price: product.selected_or_first_available_variant.unit_price, measurement: product.selected_or_first_available_variant.unit_price_measurement %}
       {%- endif -%}
+      {%- if product.selected_or_first_available_variant.metafields.custom.pieces -%}
+        {% render 'pieces-price', price: price, pieces: product.selected_or_first_available_variant.metafields.custom.pieces %}
+      {%- endif -%}
     </div>
     {%- if show_badges -%}
       <span class="badge price__badge-sale color-{{ settings.sale_badge_color_scheme }}">

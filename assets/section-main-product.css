@@ -265,7 +265,7 @@ product-info {
   > *
   + *:not([id^="price-"]):not(.product__title):not(.product__accordion):not(
     .product-oder-by-phone
-  ) {
+  ):not(.toy-capsule-block) {
   margin: 1.7rem 0;
 }
 

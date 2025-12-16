@@ -647,7 +647,7 @@
                                     limit: block.settings.products_per_page
                                     offset: continue
                                   -%}
-                                    {%- if product.metafields.custom.hide_from_listings.value != true -%}
+                                    {%- if product.metafields.custom.hide_from_listings.value != true and product.available -%}
                                       <li>
                                         {%- if block.settings.enable_quick_add -%}
                                           {% assign quick_add = 'standard' %}
