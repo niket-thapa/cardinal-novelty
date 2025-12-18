@@ -1,5 +1,5 @@
 {% comment %}
-Renders toy-capsule block
+Renders toy-display block
 
 Accepts:
 - block: {Object} Block information
@@ -8,7 +8,7 @@ Accepts:
 - section: {Object} Section object (required)
 
 Usage:
-{% render 'toy-capsule',
+{% render 'toy-display',
 block: block,
 product: product,
 product_form_id: product_form_id,
@@ -17,23 +17,23 @@ section: section
 {% endcomment %}
 
 {%- liquid
-  # Get toy-capsule product GID from metafield
+  # Get toy-display product GID from metafield
   assign toy_capsule_metafield = product.metafields.custom.in_capsule
   
   # Extract product ID from GID string (e.g., gid://shopify/Product/7484245409879)
-  assign toy_capsule_product_id = null
+  assign toy_display_product_id = null
   if toy_capsule_metafield != blank
     assign metafield_value = toy_capsule_metafield | strip
     if metafield_value contains 'gid://shopify/Product/'
       assign gid_parts = metafield_value | split: '/'
-      assign toy_capsule_product_id = gid_parts | last
+      assign toy_display_product_id = gid_parts | last
     endif
   endif
 -%}
 
 {{ 'component-toy-capsule.css' | asset_url | stylesheet_tag }}
 
-{%- if toy_capsule_product_id != blank -%}
+{%- if toy_display_product_id != blank -%}
   <div class="toy-capsule-block" {{ block.shopify_attributes }}>
     <div class="toy-capsule-container">
       <div class="toy-capsule-heading">GET THIS TOY IN TOY CAPSULES</div>
@@ -48,7 +48,7 @@ section: section
   <script>
     window.toyCapsuleData = window.toyCapsuleData || {};
     window.toyCapsuleData = {
-      productId: {{ toy_capsule_product_id | json }}
+      productId: {{ toy_display_product_id | json }}
     };
   </script>
   <script src="{{ 'toy-capsule-api.js' | asset_url }}" defer="defer"></script>

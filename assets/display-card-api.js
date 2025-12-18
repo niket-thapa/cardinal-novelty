@@ -231,7 +231,7 @@ if (!customElements.get("display-card-api")) {
                     class="quantity__button" 
                     name="minus" 
                     type="button"
-                    ${!isAvailable ? "disabled" : ""}
+                    ${!isAvailable || quantityMin <= 1 ? "disabled" : ""}
                   >
                     <span class="visually-hidden">
                       Decrease quantity for ${this.escapeHtml(product.title)}

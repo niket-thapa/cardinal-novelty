@@ -1,5 +1,5 @@
 {% comment %}
-Renders display card block
+Renders capsule display block
 
 Accepts:
 - block: {Object} Block information
@@ -8,7 +8,7 @@ Accepts:
 - section: {Object} Section object (required)
 
 Usage:
-{% render 'display-card',
+{% render 'capsule-display',
 block: block,
 product: product,
 product_form_id: product_form_id,
@@ -17,7 +17,7 @@ section: section
 {% endcomment %}
 
 {%- liquid
-  # Get display card product GID from metafield
+  # Get capsule display product GID from metafield
   assign display_card_metafield = product.metafields.custom.display_card
   
   # Extract product ID from GID string (e.g., gid://shopify/Product/7484245409879)
@@ -37,7 +37,7 @@ section: section
       <div class="display-card-loading">
         {%- render 'loading-spinner', class: 'display-card-loading-spinner' -%}
       </div>
-      <div class="display_loading_text">Loading display card</div>
+      <div class="display_loading_text">Loading capsule display</div>
     </div>
   </div>
 
@@ -54,6 +54,6 @@ section: section
   {{ 'component-display-card.css' | asset_url | stylesheet_tag }}
 {%- else -%}
   <div class="display-card-error" {{ block.shopify_attributes }}>
-    <p>Display card product not found. Please check the metafield configuration.</p>
+    <p>capsule display product not found. Please check the metafield configuration.</p>
   </div>
 {%- endif -%}

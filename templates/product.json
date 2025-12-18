@@ -101,21 +101,10 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
-    },
-    "in_house_assembled_Bca4Ny": {
-      "type": "in-house-assembled",
-      "name": "In-House Assembled",
-      "settings": {
-        "color_scheme": "",
-        "show_flag": true,
-        "heading": "Assembled In-House in the USA",
-        "description": "<p>All orders are assembled in-house and shipped from our 100,000 square foot warehouse in Baltimore, Maryland.<\/p>"
-      }
     }
   },
   "order": [
     "main",
-    "related-products",
-    "in_house_assembled_Bca4Ny"
+    "related-products"
   ]
 }

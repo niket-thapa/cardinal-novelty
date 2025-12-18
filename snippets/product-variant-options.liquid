@@ -37,7 +37,25 @@
     if value.available
       assign option_disabled = false
     endif
+
+    assign should_hide_value = false
+    assign variants_with_value_count = 0
+    assign hidden_variants_count = 0
+    assign option_index = option.position | minus: 1
+    for variant in product.variants
+      if variant.options[option_index] == value
+        assign variants_with_value_count = variants_with_value_count | plus: 1
+        if variant.metafields.custom.hide_product == true
+          assign hidden_variants_count = hidden_variants_count | plus: 1
+        endif
+      endif
+    endfor
+    if variants_with_value_count > 0 and hidden_variants_count == variants_with_value_count
+      assign should_hide_value = true
+    endif
   -%}
+
+  {%- unless should_hide_value -%}
 
   {%- capture input_id -%}
     {{ section.id }}-{{ option.position }}-{{ forloop.index0 -}}
@@ -77,6 +95,31 @@
       additional_props: input_dataset
     %}
   {%- elsif picker_type == 'button' -%}
+    {%- liquid
+      assign variant_info_text = ''
+      assign is_capsule_display_template = false
+      if template.name == 'product.capsule-display' or template.suffix == 'capsule-display'
+        assign is_capsule_display_template = true
+      endif
+      
+      if is_capsule_display_template
+        assign variant_info_text = 'Ready-to-vend inside capsules'
+      else
+        assign total_pieces = 0
+        assign option_index = option.position | minus: 1
+        for variant in product.variants
+          if variant.options[option_index] == value
+            if variant.metafields.custom.pieces != blank
+              assign variant_pieces = variant.metafields.custom.pieces | times: 1
+              assign total_pieces = total_pieces | plus: variant_pieces
+            endif
+          endif
+        endfor
+        if total_pieces > 0
+          assign variant_info_text = total_pieces | append: ' total items'
+        endif
+      endif
+    -%}
     <input
       type="radio"
       id="{{ input_id }}"
@@ -93,7 +136,9 @@
     >
     <label for="{{ input_id }}">
       <span class="variant-value">{{ value -}}</span>
-      <span class="variant-info-note">Ready-to-vend inside capsules</span>
+      {%- if variant_info_text != blank -%}
+        <span class="variant-info-note">{{ variant_info_text }}</span>
+      {%- endif -%}
       {{ label_unavailable }}
     </label>
   {%- elsif picker_type == 'dropdown' or picker_type == 'swatch_dropdown' -%}
@@ -118,4 +163,5 @@
       {%- endif %}
     </option>
   {%- endif -%}
+  {%- endunless -%}
 {%- endfor -%}

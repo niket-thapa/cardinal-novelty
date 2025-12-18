@@ -237,11 +237,17 @@
                             {%- endif -%}
                             <quantity-input class="quantity cart-quantity">
                               {% assign can_update_quantity = item.instructions.can_update_quantity | default: true %}
+                              {%- liquid
+                                assign should_disable_minus = false
+                                if item.quantity <= 1
+                                  assign should_disable_minus = true
+                                endif
+                              -%}
                               <button
                                 class="quantity__button"
                                 name="minus"
                                 type="button"
-                                {% if can_update_quantity == false %}
+                                {% if can_update_quantity == false or should_disable_minus %}
                                   disabled
                                 {% endif %}
                               >

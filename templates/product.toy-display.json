@@ -26,12 +26,6 @@
             "delivery_info_text": "Ships same day from our warehouse!"
           }
         },
-        "display_card_CjhY47": {
-          "type": "display-card",
-          "settings": {
-            "storefront_access_token": ""
-          }
-        },
         "quantity_selector": {
           "type": "quantity_selector",
           "disabled": true,
@@ -48,6 +42,12 @@
           "type": "description",
           "settings": {}
         },
+        "toy_display_D9JW4N": {
+          "type": "toy-display",
+          "settings": {
+            "storefront_access_token": ""
+          }
+        },
         "order_by_phone": {
           "type": "order-by-phone",
           "settings": {
@@ -62,16 +62,16 @@
         "price",
         "variant_picker",
         "delivery_info",
-        "display_card_CjhY47",
         "quantity_selector",
         "buy_buttons",
         "description",
+        "toy_display_D9JW4N",
         "order_by_phone"
       ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
-        "media_size": "large",
+        "media_size": "medium",
         "constrain_to_viewport": true,
         "media_fit": "contain",
         "gallery_layout": "thumbnail",
@@ -101,21 +101,10 @@
         "padding_top": 36,
         "padding_bottom": 28
       }
-    },
-    "in_house_assembled": {
-      "type": "in-house-assembled",
-      "name": "In-House Assembled",
-      "settings": {
-        "color_scheme": "",
-        "show_flag": true,
-        "heading": "Assembled In-House in the USA",
-        "description": "<p>All orders are assembled in-house and shipped from our 100,000 square foot warehouse in Baltimore, Maryland.<\/p>"
-      }
     }
   },
   "order": [
     "main",
-    "related-products",
-    "in_house_assembled"
+    "related-products"
   ]
 }

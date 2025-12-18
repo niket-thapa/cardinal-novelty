@@ -41,7 +41,9 @@
     endif
   endif
 
-  if block.settings.delivery_info_text != blank
+  if product.metafields.custom.custom_turnaround != blank
+    assign delivery_info_text = product.metafields.custom.custom_turnaround
+  else if block.settings.delivery_info_text != blank
     assign delivery_info_text = block.settings.delivery_info_text
   else
     assign delivery_info_text = 'Ships same day from our warehouse!'
@@ -49,6 +51,8 @@
 -%}
 <div class="delivery-info-box" {{ block.shopify_attributes }} style="--bg-indicator: {{ bg_color }};">
   <span class="stock-info">{{ stock_info }}</span>
-  <span class="delivery-info-text">{{ delivery_info_text }}</span>
+  {% if is_in_stock %}
+    <span class="delivery-info-text">{{ delivery_info_text }}</span>
+  {% endif %}
 </div>
 

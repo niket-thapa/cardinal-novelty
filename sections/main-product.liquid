@@ -298,7 +298,14 @@
                   </label>
                   <div class="price-per-item__container">
                     <quantity-input class="quantity" data-url="{{ product.url }}" data-section="{{ section.id }}">
-                      <button class="quantity__button" name="minus" type="button">
+                      {%- liquid
+                        assign initial_qty = product.selected_or_first_available_variant.quantity_rule.min
+                        assign should_disable_minus = false
+                        if initial_qty <= 1
+                          assign should_disable_minus = true
+                        endif
+                      -%}
+                      <button class="quantity__button" name="minus" type="button"{% if should_disable_minus %} disabled{% endif %}>
                         <span class="visually-hidden">
                           {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
                         </span>
@@ -514,22 +521,22 @@
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
               {%- when 'buy_buttons' -%}
                 {%- liquid
-                  # Check if this is a display-card template
-                  assign is_display_card_template = false
-                  if template.name == 'product.display-card' or template.suffix == 'display-card'
-                    assign is_display_card_template = true
+                  # Check if this is a capsule-display template
+                  assign is_capsule_display_template = false
+                  if template.name == 'product.capsule-display' or template.suffix == 'capsule-display'
+                    assign is_capsule_display_template = true
                   endif
 
-                  # Check if display card metafield exists (product data loaded via API)
-                  assign has_display_card_metafield = false
-                  if is_display_card_template
-                    assign display_card_metafield = product.metafields.custom.display_card
-                    if display_card_metafield != blank
-                      assign has_display_card_metafield = true
+                  # Check if capsule display metafield exists (product data loaded via API)
+                  assign has_capsule_display_metafield = false
+                  if is_capsule_display_template
+                    assign capsule_display_metafield = product.metafields.custom.display_card
+                    if capsule_display_metafield != blank
+                      assign has_capsule_display_metafield = true
                     endif
                   endif
                 -%}
-                {%- if is_display_card_template and has_display_card_metafield -%}
+                {%- if is_capsule_display_template and has_capsule_display_metafield -%}
                   {%- render 'buy-buttons-display-card',
                     block: block,
                     product: product,
@@ -741,15 +748,15 @@
                 {% render 'order-by-phone', block: block %}
               {%- when 'delivery-info' -%}
                 {% render 'delivery-info', block: block, product: product %}
-              {%- when 'display-card' -%}
-                {% render 'display-card',
+              {%- when 'capsule-display' -%}
+                {% render 'capsule-display',
                 block: block,
                 product: product,
                 product_form_id: product_form_id,
                 section: section
                 %}
-              {%- when 'toy-capsule' -%}
-                {% render 'toy-capsule',
+              {%- when 'toy-display' -%}
+                {% render 'toy-display',
                 block: block,
                 product: product,
                 product_form_id: product_form_id,
@@ -2222,8 +2229,8 @@
       ]
     },
     {
-      "type": "display-card",
-      "name": "Display Card",
+      "type": "capsule-display",
+      "name": "Capsule Display",
       "settings": [
         {
           "type": "text",
@@ -2234,8 +2241,8 @@
       ]
     },
     {
-      "type": "toy-capsule",
-      "name": "Toy Capsule",
+      "type": "toy-display",
+      "name": "Toy Display",
       "settings": [
         {
           "type": "text",

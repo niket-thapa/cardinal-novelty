@@ -196,7 +196,14 @@
                     </label>
                     <div class="price-per-item__container">
                       <quantity-input class="quantity">
-                        <button class="quantity__button" name="minus" type="button">
+                        {%- liquid
+                          assign initial_qty = product.selected_or_first_available_variant.quantity_rule.min
+                          assign should_disable_minus = false
+                          if initial_qty <= 1
+                            assign should_disable_minus = true
+                          endif
+                        -%}
+                        <button class="quantity__button" name="minus" type="button"{% if should_disable_minus %} disabled{% endif %}>
                           <span class="visually-hidden">
                             {{- 'products.product.quantity.decrease' | t: product: product.title | escape -}}
                           </span>

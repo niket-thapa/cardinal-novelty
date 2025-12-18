@@ -11,7 +11,14 @@
 {% endcomment %}
 
 <quantity-input class="quantity cart-quantity">
-  <button class="quantity__button" name="minus" type="button" data-target="decrement-{{ variant.id }}">
+  {%- liquid
+    assign current_quantity = cart | item_count_for_variant: variant.id
+    assign should_disable_minus = false
+    if current_quantity <= 1
+      assign should_disable_minus = true
+    endif
+  -%}
+  <button class="quantity__button" name="minus" type="button" data-target="decrement-{{ variant.id }}"{% if should_disable_minus %} disabled{% endif %}>
     <span class="visually-hidden">
       {{- 'products.product.quantity.decrease' | t: product: variant.title | escape -}}
     </span>

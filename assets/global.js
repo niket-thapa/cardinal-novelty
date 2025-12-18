@@ -335,45 +335,94 @@ class QuantityInput extends HTMLElement {
 
   onButtonClick(event) {
     event.preventDefault();
-    const previousValue = this.input.value;
 
-    if (event.target.name === "plus") {
-      if (
-        parseInt(this.input.dataset.min) > parseInt(this.input.step) &&
-        this.input.value == 0
-      ) {
-        this.input.value = this.input.dataset.min;
-      } else {
-        this.input.stepUp();
-      }
-    } else {
-      this.input.stepDown();
+    // Find the button element (handle clicks on child elements like spans)
+    const button =
+      event.target.closest('button[name="plus"], button[name="minus"]') ||
+      event.target;
+    const buttonName = button.name;
+
+    // If button name is not found, exit early
+    if (!buttonName) {
+      return;
     }
 
-    if (previousValue !== this.input.value)
-      this.input.dispatchEvent(this.changeEvent);
+    const previousValue = parseInt(this.input.value) || 0;
+    const min = parseInt(this.input.min) || 0;
+    const max = this.input.max ? parseInt(this.input.max) : null;
+    const step = parseInt(this.input.step) || 1;
+    let newValue = previousValue;
 
-    if (
-      this.input.dataset.min === previousValue &&
-      event.target.name === "minus"
-    ) {
-      this.input.value = parseInt(this.input.min);
+    if (buttonName === "plus") {
+      // Handle increment - always increase, never decrease
+      if (parseInt(this.input.dataset.min) > step && previousValue == 0) {
+        newValue = parseInt(this.input.dataset.min);
+        this.input.value = newValue;
+      } else {
+        this.input.stepUp();
+        newValue = parseInt(this.input.value) || previousValue + step;
+      }
+
+      // Ensure value doesn't exceed max
+      if (max !== null && newValue > max) {
+        newValue = max;
+        this.input.value = max;
+      }
+
+      // Ensure value is at least min (shouldn't be needed for plus, but safety check)
+      if (newValue < min) {
+        newValue = min;
+        this.input.value = min;
+      }
+
+      // Ensure value is at least 1 (never allow 0 when using plus button)
+      if (newValue < 1) {
+        newValue = 1;
+        this.input.value = 1;
+      }
+    } else if (buttonName === "minus") {
+      // Handle decrement
+      if (previousValue <= 1) {
+        // Should be disabled, but if somehow clicked, don't change
+        return;
+      }
+
+      this.input.stepDown();
+      newValue = parseInt(this.input.value) || previousValue - step;
+
+      // Ensure value doesn't go below min
+      if (newValue < min) {
+        newValue = min;
+        this.input.value = min;
+      }
+
+      // Ensure value doesn't go below 1
+      if (newValue < 1) {
+        newValue = 1;
+        this.input.value = 1;
+      }
+    }
+
+    // Only dispatch change event if value actually changed
+    if (previousValue !== newValue) {
+      this.input.dispatchEvent(this.changeEvent);
     }
   }
 
   validateQtyRules() {
     const value = parseInt(this.input.value);
-    if (this.input.min) {
-      const buttonMinus = this.querySelector(".quantity__button[name='minus']");
-      buttonMinus.classList.toggle(
-        "disabled",
-        parseInt(value) <= parseInt(this.input.min)
-      );
+    const buttonMinus = this.querySelector(".quantity__button[name='minus']");
+    if (buttonMinus) {
+      buttonMinus.disabled = value <= 1;
+      buttonMinus.classList.toggle("disabled", value <= 1);
     }
     if (this.input.max) {
       const max = parseInt(this.input.max);
       const buttonPlus = this.querySelector(".quantity__button[name='plus']");
-      buttonPlus.classList.toggle("disabled", value >= max);
+      if (buttonPlus) {
+        buttonPlus.disabled = value >= max;
+        buttonPlus.classList.toggle("disabled", value >= max);
+      }
     }
   }
 }
