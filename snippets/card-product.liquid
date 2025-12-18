@@ -43,6 +43,10 @@
     if ratio == 0 or ratio == null
       assign ratio = 1
     endif
+    assign ratio_percent = 1 | divided_by: ratio | times: 100
+    if ratio_percent > 120
+      assign ratio_percent = 110
+    endif
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
@@ -55,11 +59,11 @@
         {% if card_product.featured_media == nil and settings.card_style == 'card' %} ratio{% endif %}
         {% if horizontal_class %} card--horizontal{% endif %}
       "
-      style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+      style="--ratio-percent: {{ ratio_percent }}%;"
     >
       <div
         class="card__inner {% if settings.card_style == 'standard' %}color-{{ settings.card_color_scheme }} gradient{% endif %}{% if card_product.featured_media or settings.card_style == 'standard' %} ratio{% endif %}"
-        style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+        style="--ratio-percent: {{ ratio_percent }}%;"
       >
         {%- if card_product.featured_media -%}
           <div class="card__media{% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}">
@@ -582,6 +586,10 @@
     if media_aspect_ratio == 'portrait'
       assign ratio = 0.8
     endif
+    assign ratio_percent = 1 | divided_by: ratio | times: 100
+    if ratio_percent > 120
+      assign ratio_percent = 110
+    endif
   -%}
   <div class="card-wrapper product-card-wrapper underline-links-hover">
     <div
@@ -591,10 +599,11 @@
         {% if image_shape and image_shape != 'default' %} card--shape{% endif %}
         {% if settings.card_style == 'card' %} color-{{ settings.card_color_scheme }} gradient{% endif %}
       "
-      style="--ratio-percent: {{ 1 | divided_by: ratio | times: 100 }}%;"
+      style="--ratio-percent: {{ ratio_percent }}%;"
     >
       <div
         class="card__inner{% if settings.card_style == 'standard' %} color-{{ settings.card_color_scheme }} gradient{% endif %} ratio"
+        style="--ratio-percent: {{ ratio_percent }}%;"
       >
         <div
           class="card__media {% if image_shape and image_shape != 'default' %} shape--{{ image_shape }} color-{{ settings.card_color_scheme }} gradient{% endif %}"

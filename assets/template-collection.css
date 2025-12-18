@@ -164,3 +164,18 @@
 .featured_collection_product .grid__item:nth-child(4) ~ .grid__item {
   display: none;
 }
+
+/* Infinite scroll loader */
+.infinite-scroll-loader {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 0;
+}
+
+.infinite-scroll-loader .loading__spinner {
+  position: relative;
+  width: 3rem;
+  height: 3rem;
+}

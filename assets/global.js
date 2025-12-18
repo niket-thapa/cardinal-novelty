@@ -1419,6 +1419,155 @@ class VariantSelects extends HTMLElement {
 
 customElements.define("variant-selects", VariantSelects);
 
+// Update variant info notes when variant changes
+(function () {
+  if (
+    typeof subscribe === "undefined" ||
+    typeof PUB_SUB_EVENTS === "undefined"
+  ) {
+    return;
+  }
+
+  let variantChangeUnsubscriber = null;
+
+  function isCapsuleDisplayTemplate() {
+    return (
+      window.location.pathname.includes("capsule-display") ||
+      document.querySelector('[data-section-type*="capsule-display"]') ||
+      document.querySelector(".display-card-block")
+    );
+  }
+
+  function updateVariantInfoNotes(variant) {
+    if (!variant || !variant.id || !variant.options) return;
+
+    const variantSelects = document.querySelector("variant-selects");
+    if (!variantSelects) return;
+
+    const isCapsuleDisplay = isCapsuleDisplayTemplate();
+    const variantInfoNotes = variantSelects.querySelectorAll(
+      "[data-variant-info-note]"
+    );
+
+    // Get all option fieldsets to determine which option each input belongs to
+    const optionFieldsets = Array.from(
+      variantSelects.querySelectorAll("fieldset.product-form__input")
+    );
+
+    variantInfoNotes.forEach((note) => {
+      // Input is before the label, so we need to find it via the label's 'for' attribute
+      const label = note.closest("label");
+      if (!label) return;
+
+      const inputId = label.getAttribute("for");
+      if (!inputId) return;
+
+      const input = variantSelects.querySelector(`#${inputId}`);
+      if (!input || input.type !== "radio") return;
+
+      const variantPiecesData = input.dataset.variantPieces;
+
+      if (isCapsuleDisplay) {
+        note.textContent = "Ready-to-vend inside capsules";
+        note.style.display = "";
+        return;
+      }
+
+      if (!variantPiecesData) {
+        note.textContent = "";
+        note.style.display = "none";
+        return;
+      }
+
+      // Find which option this input belongs to
+      const fieldset = input.closest("fieldset");
+      const optionIndex = fieldset ? optionFieldsets.indexOf(fieldset) : -1;
+
+      if (optionIndex === -1) return;
+
+      // Parse the variant pieces data (format: "variantId:pieces,variantId:pieces")
+      const piecesMap = {};
+      variantPiecesData.split(",").forEach((item) => {
+        const parts = item.split(":");
+        if (parts.length >= 2) {
+          const variantId = parts[0].trim();
+          const pieces = parts.slice(1).join(":").trim();
+          if (variantId && pieces) {
+            piecesMap[variantId] = pieces;
+          }
+        }
+      });
+
+      // Find the variant that matches: this input's value + current selections for other options
+      // Build option combination: replace the option at optionIndex with this input's value
+      const optionValuesForThisInput = [...variant.options];
+      optionValuesForThisInput[optionIndex] = input.value;
+
+      // Try to find matching variant ID by checking if current variant matches
+      // If current variant matches (input is checked), use its pieces
+      // Otherwise, try to match by finding a variant that would be selected with this combination
+      let pieces = null;
+
+      // If this input is checked, use the current variant's pieces
+      if (input.checked) {
+        pieces = piecesMap[String(variant.id)];
+      }
+
+      // If not found and we have variant IDs in the map, try to find one that matches
+      // For now, we'll show the first available pieces value for this option value
+      // This represents what would be shown if this option value were selected
+      if (!pieces) {
+        const allVariantIds = Object.keys(piecesMap);
+        if (allVariantIds.length > 0) {
+          // Show the first pieces value available for this option value
+          // This is a reasonable fallback since we don't have easy access to all variant options
+          pieces = piecesMap[allVariantIds[0]];
+        }
+      }
+
+      if (pieces) {
+        note.textContent = pieces + " total items";
+        note.style.display = "";
+      } else {
+        note.textContent = "";
+        note.style.display = "none";
+      }
+    });
+  }
+
+  function initVariantInfoNoteUpdater() {
+    if (variantChangeUnsubscriber) {
+      variantChangeUnsubscriber();
+    }
+
+    variantChangeUnsubscriber = subscribe(
+      PUB_SUB_EVENTS.variantChange,
+      (event) => {
+        if (event && event.data && event.data.variant) {
+          // Use requestAnimationFrame to ensure DOM is fully updated after viewTransition
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              updateVariantInfoNotes(event.data.variant);
+            });
+          });
+        }
+      }
+    );
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initVariantInfoNoteUpdater);
+  } else {
+    initVariantInfoNoteUpdater();
+  }
+
+  // Re-initialize when section loads
+  document.addEventListener("shopify:section:load", () => {
+    setTimeout(initVariantInfoNoteUpdater, 100);
+  });
+})();
+
 class ProductRecommendations extends HTMLElement {
   observer = undefined;
 

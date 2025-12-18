@@ -52,8 +52,4 @@ section: section
   <script src="{{ 'display-card-api.js' | asset_url }}" defer="defer"></script>
 
   {{ 'component-display-card.css' | asset_url | stylesheet_tag }}
-{%- else -%}
-  <div class="display-card-error" {{ block.shopify_attributes }}>
-    <p>capsule display product not found. Please check the metafield configuration.</p>
-  </div>
 {%- endif -%}

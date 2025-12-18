@@ -105,20 +105,72 @@
       if is_capsule_display_template
         assign variant_info_text = 'Ready-to-vend inside capsules'
       else
-        assign total_pieces = 0
         assign option_index = option.position | minus: 1
-        for variant in product.variants
-          if variant.options[option_index] == value
-            if variant.metafields.custom.pieces != blank
-              assign variant_pieces = variant.metafields.custom.pieces | times: 1
-              assign total_pieces = total_pieces | plus: variant_pieces
+        assign selected_variant = product.selected_or_first_available_variant
+        
+        # If this option value is selected, use the selected variant's pieces
+        if value.selected and selected_variant.metafields.custom.pieces != blank
+          assign variant_info_text = selected_variant.metafields.custom.pieces | append: ' total items'
+        else
+          # Find variant that matches: this option value + selected variant's other options
+          for variant in product.variants
+            if variant.options[option_index] == value
+              # Check if this variant matches selected variant's other options
+              assign matches_other_options = true
+              
+              # Check option 0 if it's not the current option
+              if option_index != 0
+                if variant.options[0] != selected_variant.options[0]
+                  assign matches_other_options = false
+                endif
+              endif
+              
+              # Check option 1 if it exists and is not the current option
+              if matches_other_options and product.options.size > 1 and option_index != 1
+                if variant.options[1] != selected_variant.options[1]
+                  assign matches_other_options = false
+                endif
+              endif
+              
+              # Check option 2 if it exists and is not the current option
+              if matches_other_options and product.options.size > 2 and option_index != 2
+                if variant.options[2] != selected_variant.options[2]
+                  assign matches_other_options = false
+                endif
+              endif
+              
+              if matches_other_options and variant.metafields.custom.pieces != blank
+                assign variant_info_text = variant.metafields.custom.pieces | append: ' total items'
+                break
+              endif
             endif
+          endfor
+          
+          # Fallback: use first variant with this option value if no match found
+          if variant_info_text == blank
+            for variant in product.variants
+              if variant.options[option_index] == value
+                if variant.metafields.custom.pieces != blank
+                  assign variant_info_text = variant.metafields.custom.pieces | append: ' total items'
+                  break
+                endif
+              endif
+            endfor
           endif
-        endfor
-        if total_pieces > 0
-          assign variant_info_text = total_pieces | append: ' total items'
         endif
       endif
+    -%}
+    {%- liquid
+      assign variant_pieces_data = ''
+      assign option_index = option.position | minus: 1
+      for variant in product.variants
+        if variant.options[option_index] == value and variant.metafields.custom.pieces != blank
+          if variant_pieces_data != ''
+            assign variant_pieces_data = variant_pieces_data | append: ','
+          endif
+          assign variant_pieces_data = variant_pieces_data | append: variant.id | append: ':' | append: variant.metafields.custom.pieces
+        endif
+      endfor
     -%}
     <input
       type="radio"
@@ -132,12 +184,17 @@
       {% if option_disabled %}
         class="disabled"
       {% endif %}
+      {% if variant_pieces_data != blank %}
+        data-variant-pieces="{{ variant_pieces_data }}"
+      {% endif %}
       {{ input_dataset }}
     >
     <label for="{{ input_id }}">
       <span class="variant-value">{{ value -}}</span>
       {%- if variant_info_text != blank -%}
-        <span class="variant-info-note">{{ variant_info_text }}</span>
+        <span class="variant-info-note" data-variant-info-note>{{ variant_info_text }}</span>
+      {%- else -%}
+        <span class="variant-info-note" data-variant-info-note style="display: none;"></span>
       {%- endif -%}
       {{ label_unavailable }}
     </label>

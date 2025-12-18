@@ -24,6 +24,10 @@
             "swatch_shape": "circle"
           }
         },
+        "quantity_selector": {
+          "type": "quantity_selector",
+          "settings": {}
+        },
         "delivery_info_BKhw4Q": {
           "type": "delivery-info",
           "settings": {
@@ -31,11 +35,6 @@
             "out_of_stock_text": "Out of Stock",
             "delivery_info_text": "Ships same day from our warehouse!"
           }
-        },
-        "quantity_selector": {
-          "type": "quantity_selector",
-          "disabled": true,
-          "settings": {}
         },
         "buy_buttons": {
           "type": "buy_buttons",
@@ -62,8 +61,8 @@
         "title",
         "price",
         "variant_picker",
-        "delivery_info_BKhw4Q",
         "quantity_selector",
+        "delivery_info_BKhw4Q",
         "buy_buttons",
         "description",
         "order_by_phone_rC7PgQ"

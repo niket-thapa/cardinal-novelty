@@ -22,8 +22,11 @@
       assign is_in_stock = false
       assign bg_color = '#dc3545'
     elsif variant.inventory_management == 'shopify' and variant.inventory_quantity <= 0
-      assign is_in_stock = false
-      assign bg_color = '#dc3545'
+      # If inventory_policy is 'continue', treat as in stock even if quantity is 0
+      if variant.inventory_policy != 'continue'
+        assign is_in_stock = false
+        assign bg_color = '#dc3545'
+      endif
     endif
   endif
 

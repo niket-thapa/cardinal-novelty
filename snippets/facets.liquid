@@ -26,19 +26,35 @@
     assign terms = results.terms | escape
     assign results_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
   endif
+  
 -%}
+  {%- comment -%} Count filtered products (available and not hidden) {%- endcomment -%}
+  {%- liquid
+    assign filtered_products_count = 0
+    
+    if results.products
+      for product in results.products
+        if product.metafields.custom.hide_from_listings.value != true and product.available
+          assign filtered_products_count = filtered_products_count | plus: 1
+        endif
+      endfor
+    endif
+    
+    if filtered_products_count == 0
+      if results.products_count
+        assign filtered_products_count = results.products_count
+      else
+        assign filtered_products_count = 0
+      endif
+    endif
+  -%}
   <div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"><div class="product-count" role="status">
     <h2>
       <span id="ProductCount">
         {%- if results.results_count -%}
         {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
-        {%- elsif results.products_count == results.all_products_count -%}
-        {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
         {%- else -%}
-        {{
-        'products.facets.product_count'
-        | t: product_count: results.products_count, count: results.all_products_count
-        }}
+        {{ 'products.facets.product_count_simple' | t: count: filtered_products_count }}
         {%- endif -%}
       </span>
     </h2>

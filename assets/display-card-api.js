@@ -35,7 +35,7 @@ if (!customElements.get("display-card-api")) {
 
       async loadProduct() {
         if (!this.productId) {
-          this.showError("Display card product ID not found.");
+          this.innerHTML = "";
           return;
         }
 
@@ -59,11 +59,11 @@ if (!customElements.get("display-card-api")) {
               })
             );
           } else {
-            this.showError("Display card product not found.");
+            this.innerHTML = "";
           }
         } catch (error) {
           console.error("Error loading display card:", error);
-          this.showError("Error loading display card. Please try again later.");
+          this.innerHTML = "";
         }
       }
 
@@ -108,7 +108,9 @@ if (!customElements.get("display-card-api")) {
       }
 
       async fetchProduct(productId) {
-        const response = await fetch(`/products.json?ids=${productId}`);
+        const response = await fetch(
+          `/products.json?limit=1000&ids=${productId}`
+        );
         const data = await response.json();
 
         if (data.products && data.products.length > 0) {
@@ -146,7 +148,7 @@ if (!customElements.get("display-card-api")) {
             : null;
 
         if (!variant) {
-          this.showError("Product variant not found.");
+          this.innerHTML = "";
           return;
         }
 
@@ -189,9 +191,7 @@ if (!customElements.get("display-card-api")) {
         // Product Content
         html += `
           <div class="display-card-content">
-            <h2 class="display-card-heading">${this.escapeHtml(
-              product.title
-            )}</h2>
+            <h2 class="display-card-heading">ADD PAPER DISPLAY CARD</h2>
             
             <div class="display-card-quantity-wrapper">
               <div class="product-form__quantity display-card-quantity">
@@ -285,11 +285,7 @@ if (!customElements.get("display-card-api")) {
       }
 
       showError(message) {
-        this.innerHTML = `
-          <div class="display-card-error">
-            <p>${this.escapeHtml(message)}</p>
-          </div>
-        `;
+        this.innerHTML = "";
       }
 
       escapeHtml(text) {

@@ -105,10 +105,37 @@
               {%- elsif product.selected_or_first_available_variant.available == false or quantity_rule_soldout -%}
                 {{ 'products.product.sold_out' | t }}
               {%- else -%}
+                {%- liquid
+                  assign target = product.selected_or_first_available_variant
+                  assign price = target.price | default: 1999
+                  assign compare_at_price = target.compare_at_price
+                  assign money_price = price | money
+                  if settings.currency_code_enabled
+                    assign money_price = price | money_with_currency
+                  endif
+                -%}
                 <span class="combined-price-text">
                   {{ 'products.product.add_to_cart' | t }}
                 </span>
-                <span class="combined-price-amount" style="display: none;"></span>
+                <span>•</span>
+                <span class="combined-price-amount">
+                  {%- if compare_at_price > price -%}
+                    <s class="price-item price-item--regular">
+                      {% if settings.currency_code_enabled %}
+                        {{ compare_at_price | money_with_currency }}
+                      {% else %}
+                        {{ compare_at_price | money }}
+                      {% endif %}
+                    </s>
+                    <span class="price-item price-item--sale price-item--last">
+                      {{ money_price }}
+                    </span>
+                  {%- else -%}
+                    <span class="price-item price-item--regular">
+                      {{ money_price }}
+                    </span>
+                  {%- endif -%}
+                </span>
               {%- endif -%}
             </span>
             {%- render 'loading-spinner' -%}

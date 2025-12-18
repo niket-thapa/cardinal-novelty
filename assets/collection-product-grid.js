@@ -62,20 +62,132 @@ class CollectionProductGrid {
 
   waitForAnimations() {
     return new Promise((resolve) => {
-      // Use multiple requestAnimationFrame calls to ensure layout is fully settled
-      requestAnimationFrame(() => {
+      const gridItems = this.productGrid.querySelectorAll(
+        "li.grid__item.scroll-trigger"
+      );
+
+      // If no scroll-trigger elements, resolve immediately
+      if (gridItems.length === 0) {
         requestAnimationFrame(() => {
-          // Additional delay to account for CSS animations/transitions
-          setTimeout(() => {
-            // One more requestAnimationFrame to ensure everything is painted
-            requestAnimationFrame(() => {
-              resolve();
-            });
-          }, 200); // Wait for slide-in animations to complete
+          requestAnimationFrame(() => {
+            resolve();
+          });
+        });
+        return;
+      }
+
+      // Wait for elements to come on-screen and animations to complete
+      this.waitForScrollAnimations(gridItems).then(() => {
+        // Additional delay to ensure layout is settled after animations
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            resolve();
+          });
         });
       });
     });
   }
+
+  waitForScrollAnimations(gridItems) {
+    return new Promise((resolve) => {
+      const itemsArray = Array.from(gridItems);
+      if (itemsArray.length === 0) {
+        resolve();
+        return;
+      }
+
+      const maxWaitTime = 3000; // Maximum 3 seconds wait
+      const resolvedItems = new Set();
+      let checkInterval = null;
+
+      // Function to check if all visible items have finished animating
+      const checkAllAnimations = () => {
+        let allDone = true;
+        let maxDelay = 0;
+
+        itemsArray.forEach((item) => {
+          const isOffscreen = item.classList.contains(
+            "scroll-trigger--offscreen"
+          );
+
+          // Skip offscreen items for now (they'll be handled when they come into view)
+          if (isOffscreen) {
+            return;
+          }
+
+          // Item is on-screen, check if animation is complete
+          const hasSlideIn = item.classList.contains("animate--slide-in");
+          const computedStyle = window.getComputedStyle(item);
+          const animationName = computedStyle.animationName;
+          const animationDelay = parseFloat(computedStyle.animationDelay) * 1000 || 0;
+          const animationDuration = parseFloat(computedStyle.animationDuration) * 1000 || 600;
+
+          // Track maximum delay + duration
+          maxDelay = Math.max(maxDelay, animationDelay + animationDuration);
+
+          if (hasSlideIn && animationName !== "none") {
+            // Animation is still running
+            allDone = false;
+          } else if (!resolvedItems.has(item)) {
+            // Animation is complete
+            resolvedItems.add(item);
+          }
+        });
+
+        // If all on-screen items are done, wait a bit more for any remaining delays
+        if (allDone) {
+          clearInterval(checkInterval);
+          setTimeout(() => {
+            resolve();
+          }, Math.max(maxDelay, 200));
+        }
+      };
+
+      // Also use IntersectionObserver to handle items coming into view
+      const intersectionObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              // Item came into view, start checking its animation
+              checkAllAnimations();
+            }
+          });
+        },
+        { rootMargin: "0px 0px -50px 0px" }
+      );
+
+      itemsArray.forEach((item) => {
+        intersectionObserver.observe(item);
+      });
+
+      // Start checking immediately for items already on-screen
+      checkAllAnimations();
+
+      // Check periodically
+      checkInterval = setInterval(() => {
+        checkAllAnimations();
+      }, 100);
+
+      // Listen for animationend events
+      itemsArray.forEach((item) => {
+        const handleAnimationEnd = () => {
+          resolvedItems.add(item);
+          checkAllAnimations();
+        };
+        item.addEventListener("animationend", handleAnimationEnd, {
+          once: true,
+        });
+      });
+
+      // Fallback timeout
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        intersectionObserver.disconnect();
+        resolve();
+      }, maxWaitTime);
+    });
+  }
+
 
   waitForImages() {
     const images = this.productGrid.querySelectorAll(".card__media img");
@@ -197,7 +309,12 @@ class CollectionProductGrid {
     // If we found a valid aspect ratio, apply it to all cards in the row
     if (maxAspectRatio && cardElements.length > 0) {
       // Calculate ratio-percent: (1 / aspectRatio) * 100
-      const ratioPercent = (1 / maxAspectRatio) * 100;
+      let ratioPercent = (1 / maxAspectRatio) * 100;
+
+      // Cap the ratio-percent at 110% if it exceeds 120%
+      if (ratioPercent > 120) {
+        ratioPercent = 110;
+      }
 
       // Replace the existing --ratio-percent value on .card and .card__inner
       cardElements.forEach((card) => {

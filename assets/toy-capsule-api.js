@@ -32,7 +32,7 @@ if (!customElements.get("toy-capsule-api")) {
 
       async loadProduct() {
         if (!this.productId) {
-          this.showError("Toy capsule product ID not found.");
+          this.innerHTML = "";
           return;
         }
 
@@ -41,16 +41,18 @@ if (!customElements.get("toy-capsule-api")) {
           if (product) {
             this.renderProduct(product);
           } else {
-            this.showError("Toy capsule product not found.");
+            this.innerHTML = "";
           }
         } catch (error) {
           console.error("Error loading toy capsule:", error);
-          this.showError("Error loading toy capsule. Please try again later.");
+          this.innerHTML = "";
         }
       }
 
       async fetchProduct(productId) {
-        const response = await fetch(`/products.json?ids=${productId}`);
+        const response = await fetch(
+          `/products.json?limit=1000&ids=${productId}`
+        );
         const data = await response.json();
 
         if (data.products && data.products.length > 0) {
@@ -70,7 +72,7 @@ if (!customElements.get("toy-capsule-api")) {
             : null;
 
         if (!variant) {
-          this.showError("Product variant not found.");
+          this.innerHTML = "";
           return;
         }
 
@@ -152,11 +154,7 @@ if (!customElements.get("toy-capsule-api")) {
       }
 
       showError(message) {
-        this.innerHTML = `
-          <div class="toy-capsule-error">
-            <p>${this.escapeHtml(message)}</p>
-          </div>
-        `;
+        this.innerHTML = "";
       }
 
       escapeHtml(text) {

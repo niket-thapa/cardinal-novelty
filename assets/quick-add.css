@@ -363,6 +363,10 @@ quick-add-modal .product-form__buttons {
   min-height: 0;
 }
 
+.quick-add__submit::before {
+  content: "+";
+}
+
 quick-add-modal .product-media-container.constrain-height {
   --viewport-offset: calc(
     (

@@ -2710,6 +2710,12 @@ input[type="checkbox"] {
   position: relative;
 }
 
+@media screen and (max-width: 989px) {
+  .header__icon--cart {
+    margin-inline-end: 1rem;
+  }
+}
+
 .header__icon--menu[aria-expanded="true"]::before {
   content: "";
   top: 100%;
@@ -3074,6 +3080,10 @@ details[open] > .header__submenu {
   border-radius: 100rem;
 }
 
+.header__submenu .header__menu-item {
+  font-weight: 700;
+}
+
 .header__menu-item:hover {
   color: rgb(var(--color-foreground));
 }
@@ -3157,6 +3167,17 @@ details[open] > .header__menu-item .icon-caret {
 header-menu > details,
 details-disclosure > details {
   position: relative;
+}
+
+@media screen and (min-width: 990px) {
+  header-menu > details:not(.mega-menu) {
+    padding-block: 1.3rem;
+    margin-block: -1.3rem;
+  }
+
+  details:not(.mega-menu) > .header__submenu {
+    top: 100%;
+  }
 }
 
 @keyframes animateMenuOpen {

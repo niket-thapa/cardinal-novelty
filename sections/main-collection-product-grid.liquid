@@ -22,6 +22,7 @@
   <script src="{{ 'quick-order-list.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 <script src="{{ 'collection-product-grid.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'infinite-scroll.js' | asset_url }}" defer="defer"></script>
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -38,7 +39,7 @@
 {%- endstyle -%}
   <div class="page-width collection-ship-info">All orders ship fast from our 100,000 square foot warehouse</div>
 
-<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}">
+<div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}" data-section-id="{{ section.id }}" data-products-per-page="{{ section.settings.products_per_page }}">
   {%- paginate collection.products by section.settings.products_per_page -%}
     {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
     {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
@@ -75,6 +76,20 @@
             </div>
           </div>
 
+          {%- comment -%} Count filtered products (available and not hidden) {%- endcomment -%}
+          {%- liquid
+            assign filtered_products_count = 0
+            
+            for product in collection.products
+              if product.metafields.custom.hide_from_listings.value != true and product.available
+                assign filtered_products_count = filtered_products_count | plus: 1
+              endif
+            endfor
+            
+            if filtered_products_count == 0 and collection.products_count
+              assign filtered_products_count = collection.products_count
+            endif
+          -%}
           <div class="product-count-vertical light" role="status">
             <h2 class="product-count__text text-body">
               <span id="ProductCountDesktop">
@@ -83,13 +98,8 @@
                     'templates.search.results_with_count'
                     | t: terms: collection.terms, count: collection.results_count
                   }}
-                {%- elsif collection.products_count == collection.all_products_count -%}
-                  {{ 'products.facets.product_count_simple' | t: count: collection.products_count }}
                 {%- else -%}
-                  {{
-                    'products.facets.product_count'
-                    | t: product_count: collection.products_count, count: collection.all_products_count
-                  }}
+                  {{ 'products.facets.product_count_simple' | t: count: filtered_products_count }}
                 {%- endif -%}
               </span>
             </h2>
@@ -184,11 +194,17 @@
                   {%- assign skip_card_product_styles = true -%}
                 {%- endif -%}
               {%- endfor -%}
+              {%- comment -%} Infinite scroll loading indicator {%- endcomment -%}
+              <li class="grid__item" id="infinite-scroll-loader" style="display: none; grid-column: 1 / -1;">
+                <div class="infinite-scroll-loader">
+                  <div class="loading__spinner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="spinner" viewBox="0 0 66 66">
+                      <circle stroke-width="6" cx="33" cy="33" r="30" fill="none" class="path"></circle>
+                    </svg>
+                  </div>
+                </div>
+              </li>
             </ul>
-
-            {%- if paginate.pages > 1 -%}
-              {% render 'pagination', paginate: paginate, anchor: '' %}
-            {%- endif -%}
           </div>
         {%- endif -%}
       </div>

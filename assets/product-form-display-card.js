@@ -7,7 +7,6 @@ if (!customElements.get("product-form-display-card")) {
 
         this.form = this.querySelector("form");
         if (!this.form) {
-          console.error("Product form not found");
           return;
         }
 
@@ -25,7 +24,6 @@ if (!customElements.get("product-form-display-card")) {
 
         this.submitButton = this.querySelector('[type="submit"]');
         if (!this.submitButton) {
-          console.error("Submit button not found");
           return;
         }
 
@@ -68,6 +66,9 @@ if (!customElements.get("product-form-display-card")) {
         // Listen for display card quantity changes
         this.setupDisplayCardQuantityListener();
 
+        // Listen for main product quantity changes
+        this.setupMainProductQuantityListener();
+
         // Listen for main product variant changes
         this.setupVariantChangeListener();
 
@@ -76,20 +77,11 @@ if (!customElements.get("product-form-display-card")) {
           if (event.detail) {
             if (event.detail.variantId) {
               this.displayCardVariantId = event.detail.variantId;
-              console.log(
-                "Display card variant ID loaded:",
-                this.displayCardVariantId
-              );
             }
             if (event.detail.price) {
               // Price from API is in dollars (e.g., "1.00"), convert to cents
               const priceInDollars = parseFloat(event.detail.price) || 0;
               this.displayCardPrice = Math.round(priceInDollars * 100);
-              console.log(
-                "Display card price loaded from event:",
-                this.displayCardPrice,
-                "cents"
-              );
             }
             if (event.detail.available !== undefined) {
               this.displayCardAvailable = event.detail.available;
@@ -139,11 +131,6 @@ if (!customElements.get("product-form-display-card")) {
             // Price from API is in dollars (e.g., "1.00"), convert to cents
             const priceInDollars = parseFloat(variantPrice) || 0;
             this.displayCardPrice = Math.round(priceInDollars * 100);
-            console.log(
-              "Display card price loaded from quantity-input:",
-              this.displayCardPrice,
-              "cents"
-            );
           }
 
           // Check if available (not disabled)
@@ -171,11 +158,6 @@ if (!customElements.get("product-form-display-card")) {
             // Price from API is in dollars (e.g., "1.00"), convert to cents
             const priceInDollars = parseFloat(variantPrice) || 0;
             this.displayCardPrice = Math.round(priceInDollars * 100);
-            console.log(
-              "Display card price loaded from .quantity__input:",
-              this.displayCardPrice,
-              "cents"
-            );
           }
 
           // Update price after loading data
@@ -192,10 +174,6 @@ if (!customElements.get("product-form-display-card")) {
           setTimeout(() => {
             this.loadDisplayCardDataFromAPI();
           }, 500);
-        } else {
-          console.warn(
-            "Failed to load display card data after multiple attempts"
-          );
         }
       }
 
@@ -270,6 +248,85 @@ if (!customElements.get("product-form-display-card")) {
         setupListeners();
       }
 
+      setupMainProductQuantityListener() {
+        // Get section ID from data-section-id attribute
+        // The input ID format is: Quantity-{sectionId}
+        const sectionId = this.dataset.sectionId;
+
+        // Get the actual element reference
+        const setupListeners = () => {
+          let mainQuantityInput = null;
+          if (sectionId) {
+            mainQuantityInput = document.getElementById(
+              `Quantity-${sectionId}`
+            );
+            // Verify it has the correct class and is not display card
+            if (
+              mainQuantityInput &&
+              (!mainQuantityInput.classList.contains("quantity__input") ||
+                mainQuantityInput.closest(".display-card-block") ||
+                mainQuantityInput.closest(".display-card-quantity"))
+            ) {
+              mainQuantityInput = null;
+            }
+          }
+
+          if (!mainQuantityInput) {
+            // Retry after a delay if element not found yet
+            setTimeout(setupListeners, 500);
+            return;
+          }
+
+          // Handler function
+          const handleQuantityChange = () => {
+            this.updateCombinedPrice();
+          };
+
+          // Listen directly on the input element
+          mainQuantityInput.addEventListener("change", handleQuantityChange);
+          mainQuantityInput.addEventListener("input", handleQuantityChange);
+
+          // Also listen to quantity-input custom element if it exists
+          const quantityInputElement =
+            mainQuantityInput.closest("quantity-input");
+          if (quantityInputElement) {
+            quantityInputElement.addEventListener(
+              "change",
+              handleQuantityChange
+            );
+          }
+
+          // Listen for button clicks (plus/minus buttons) on the quantity-input wrapper
+          if (quantityInputElement) {
+            const minusButton = quantityInputElement.querySelector(
+              '.quantity__button[name="minus"]'
+            );
+            const plusButton = quantityInputElement.querySelector(
+              '.quantity__button[name="plus"]'
+            );
+
+            if (minusButton) {
+              minusButton.addEventListener("click", () => {
+                setTimeout(() => {
+                  this.updateCombinedPrice();
+                }, 150);
+              });
+            }
+
+            if (plusButton) {
+              plusButton.addEventListener("click", () => {
+                setTimeout(() => {
+                  this.updateCombinedPrice();
+                }, 150);
+              });
+            }
+          }
+        };
+
+        // Start setting up listeners
+        setupListeners();
+      }
+
       setupVariantChangeListener() {
         // Listen for variant changes via pubsub (PUB_SUB_EVENTS.variantChange)
         if (
@@ -286,6 +343,16 @@ if (!customElements.get("product-form-display-card")) {
               }
             }
           );
+
+          // Also listen for quantity updates
+          if (PUB_SUB_EVENTS.quantityUpdate) {
+            this.quantityUpdateUnsubscriber = subscribe(
+              PUB_SUB_EVENTS.quantityUpdate,
+              () => {
+                this.updateCombinedPrice();
+              }
+            );
+          }
         }
 
         // Also listen to price element changes (fallback)
@@ -309,6 +376,46 @@ if (!customElements.get("product-form-display-card")) {
         if (this.variantChangeUnsubscriber) {
           this.variantChangeUnsubscriber();
         }
+        if (this.quantityUpdateUnsubscriber) {
+          this.quantityUpdateUnsubscriber();
+        }
+      }
+
+      getMainProductQuantity() {
+        // Get section ID from data-section-id attribute
+        const sectionId = this.dataset.sectionId;
+
+        // The input has form attribute but is not a child of the form
+        // So we need to search in document, not this.form
+        if (sectionId) {
+          // Use getElementById (most reliable for IDs)
+          const quantityInput = document.getElementById(
+            `Quantity-${sectionId}`
+          );
+          if (
+            quantityInput &&
+            quantityInput.classList.contains("quantity__input")
+          ) {
+            // Verify it's not the display card quantity
+            if (
+              !quantityInput.closest(".display-card-block") &&
+              !quantityInput.closest(".display-card-quantity")
+            ) {
+              const quantity = parseInt(quantityInput.value) || 1;
+              return Math.max(1, quantity);
+            }
+          }
+        }
+
+        // Fallback: find input that's NOT inside display card or quantity-input wrapper
+        // Search in document since input might not be a form child
+        const mainProductQuantityInput = document.querySelector(
+          'input[name="quantity"].quantity__input:not(.display-card-quantity .quantity__input):not(quantity-input .quantity__input)'
+        );
+        if (!mainProductQuantityInput) return 1;
+
+        const quantity = parseInt(mainProductQuantityInput.value) || 1;
+        return Math.max(1, quantity);
       }
 
       getDisplayCardQuantity() {
@@ -324,52 +431,115 @@ if (!customElements.get("product-form-display-card")) {
       }
 
       updateCombinedPrice() {
+        // Try to re-find elements if they're missing (in case HTML was replaced)
+        if (!this.combinedPriceText || !this.combinedPriceAmount) {
+          if (this.submitButtonText) {
+            this.combinedPriceText = this.submitButtonText.querySelector(
+              ".combined-price-text"
+            );
+            this.combinedPriceAmount = this.submitButtonText.querySelector(
+              ".combined-price-amount"
+            );
+          }
+          // If still missing, try to get submitButtonText again
+          if (!this.submitButtonText && this.submitButton) {
+            this.submitButtonText = this.submitButton.querySelector(
+              ".product-form__submit-text"
+            );
+            if (this.submitButtonText) {
+              this.combinedPriceText = this.submitButtonText.querySelector(
+                ".combined-price-text"
+              );
+              this.combinedPriceAmount = this.submitButtonText.querySelector(
+                ".combined-price-amount"
+              );
+            }
+          }
+        }
+
         if (!this.combinedPriceText) {
-          console.warn("combinedPriceText not found");
           return;
         }
 
         // Get main product price
         let mainPrice = this.mainProductPrice;
+        let compareAtPrice = 0;
+
         if (mainPrice === 0) {
           // Try to get from price element
-          const priceElement = document.querySelector(
-            ".price .price-item--regular"
-          );
-          if (priceElement) {
-            const priceText = priceElement.textContent.replace(/[^0-9.]/g, "");
-            mainPrice = parseFloat(priceText) * 100; // Convert to cents
+          const priceContainer = document.querySelector(".price");
+          if (priceContainer) {
+            const regularPriceElement = priceContainer.querySelector(
+              ".price-item--regular:not(s)"
+            );
+            const salePriceElement =
+              priceContainer.querySelector(".price-item--sale");
+            const comparePriceElement = priceContainer.querySelector(
+              "s.price-item--regular"
+            );
+
+            if (salePriceElement) {
+              const priceText = salePriceElement.textContent.replace(
+                /[^0-9.]/g,
+                ""
+              );
+              mainPrice = parseFloat(priceText) * 100; // Convert to cents
+            } else if (regularPriceElement) {
+              const priceText = regularPriceElement.textContent.replace(
+                /[^0-9.]/g,
+                ""
+              );
+              mainPrice = parseFloat(priceText) * 100; // Convert to cents
+            }
+
+            if (comparePriceElement) {
+              const compareText = comparePriceElement.textContent.replace(
+                /[^0-9.]/g,
+                ""
+              );
+              compareAtPrice = parseFloat(compareText) * 100; // Convert to cents
+            }
           }
         }
+
+        // Get main product quantity
+        const mainProductQty = this.getMainProductQuantity();
 
         // Get display card quantity
         const displayCardQty = this.getDisplayCardQuantity();
 
-        // Calculate combined price
+        // Calculate combined price: (main price * main qty) + (display card price * display card qty)
+        const mainProductTotal = mainPrice * mainProductQty;
         const displayCardTotal = (this.displayCardPrice || 0) * displayCardQty;
-        const combinedPrice = mainPrice + displayCardTotal;
+        const combinedPrice = mainProductTotal + displayCardTotal;
+        const combinedCompareAtPrice =
+          compareAtPrice > 0 ? compareAtPrice * mainProductQty : 0;
 
-        // Update button text and amount
-        if (combinedPrice > 0 && this.displayCardPrice > 0) {
-          const formattedPrice = this.formatMoney(combinedPrice);
+        // Always show the price - update it if we have combined price, otherwise keep default
+        if (this.combinedPriceAmount) {
+          // Always ensure it's visible
+          this.combinedPriceAmount.style.display = "";
 
-          // Keep combined-price-text with just the "Add to cart" text
-          this.combinedPriceText.textContent =
-            window.variantStrings?.addToCart || "Add to cart";
+          // Update price if we have main price (with or without display card)
+          if (combinedPrice > 0 && mainPrice > 0) {
+            const formattedPrice = this.formatMoney(combinedPrice);
+            const formattedCompareAtPrice =
+              combinedCompareAtPrice > 0
+                ? this.formatMoney(combinedCompareAtPrice)
+                : null;
 
-          // Show the price in combined-price-amount
-          if (this.combinedPriceAmount) {
-            this.combinedPriceAmount.textContent = formattedPrice;
-            this.combinedPriceAmount.style.display = "";
+            // Preserve HTML structure with compare_at_price if it exists
+            if (
+              formattedCompareAtPrice &&
+              combinedCompareAtPrice > combinedPrice
+            ) {
+              this.combinedPriceAmount.innerHTML = `<s class="price-item price-item--regular">${formattedCompareAtPrice}</s><span class="price-item price-item--sale price-item--last">${formattedPrice}</span>`;
+            } else {
+              this.combinedPriceAmount.innerHTML = `<span class="price-item price-item--regular">${formattedPrice}</span>`;
+            }
           }
-        } else {
-          this.combinedPriceText.textContent =
-            window.variantStrings?.addToCart || "Add to cart";
-
-          // Hide combined-price-amount if no display card price
-          if (this.combinedPriceAmount) {
-            this.combinedPriceAmount.style.display = "none";
-          }
+          // If no combined price available yet, keep the default price from Liquid template
+          // (don't update textContent, so it keeps the default value)
         }
       }
 
@@ -382,6 +552,67 @@ if (!customElements.get("product-form-display-card")) {
         }).format(dollars);
       }
 
+      resetQuantitiesAndPrice() {
+        // Reset main product quantity to 1
+        const sectionId = this.dataset.sectionId;
+        let mainQuantityInput = null;
+
+        if (sectionId) {
+          mainQuantityInput = document.getElementById(`Quantity-${sectionId}`);
+          if (
+            mainQuantityInput &&
+            mainQuantityInput.classList.contains("quantity__input") &&
+            !mainQuantityInput.closest(".display-card-block") &&
+            !mainQuantityInput.closest(".display-card-quantity")
+          ) {
+            mainQuantityInput.value = 1;
+            mainQuantityInput.dispatchEvent(
+              new Event("change", { bubbles: true })
+            );
+            mainQuantityInput.dispatchEvent(
+              new Event("input", { bubbles: true })
+            );
+          }
+        }
+
+        // Fallback: find main product input directly
+        if (!mainQuantityInput) {
+          const mainProductQuantityInput = document.querySelector(
+            'input[name="quantity"].quantity__input:not(.display-card-quantity .quantity__input):not(quantity-input .quantity__input)'
+          );
+          if (mainProductQuantityInput) {
+            mainProductQuantityInput.value = 1;
+            mainProductQuantityInput.dispatchEvent(
+              new Event("change", { bubbles: true })
+            );
+            mainProductQuantityInput.dispatchEvent(
+              new Event("input", { bubbles: true })
+            );
+          }
+        }
+
+        // Reset display card quantity to 1
+        const displayCardBlock = document.querySelector(".display-card-block");
+        if (displayCardBlock) {
+          const displayCardQuantityInput =
+            displayCardBlock.querySelector(".quantity__input");
+          if (displayCardQuantityInput) {
+            displayCardQuantityInput.value = 1;
+            displayCardQuantityInput.dispatchEvent(
+              new Event("change", { bubbles: true })
+            );
+            displayCardQuantityInput.dispatchEvent(
+              new Event("input", { bubbles: true })
+            );
+          }
+        }
+
+        // Update price after resetting quantities
+        setTimeout(() => {
+          this.updateCombinedPrice();
+        }, 100);
+      }
+
       async onSubmitHandler(evt) {
         evt.preventDefault();
         if (this.submitButton.getAttribute("aria-disabled") === "true") return;
@@ -390,9 +621,6 @@ if (!customElements.get("product-form-display-card")) {
 
         // Ensure display card data is loaded before submitting
         if (!this.displayCardVariantId || !this.displayCardPrice) {
-          console.log(
-            "Display card data not loaded yet, attempting to load..."
-          );
           this.loadDisplayCardDataFromAPI();
 
           // Wait a bit and try again if still not loaded
@@ -428,24 +656,14 @@ if (!customElements.get("product-form-display-card")) {
         if (loadingSpinner) loadingSpinner.classList.remove("hidden");
 
         try {
-          // Get quantities
-          const mainProductQty =
-            parseInt(this.form.querySelector('[name="quantity"]')?.value) || 1;
+          // Get quantities - use getMainProductQuantity() to get the correct value
+          const mainProductQty = this.getMainProductQuantity();
           const displayCardQty = this.getDisplayCardQuantity();
 
           // Ensure main product variant ID is set
           if (!this.mainProductVariantId && this.variantIdInput) {
             this.mainProductVariantId = this.variantIdInput.value;
           }
-
-          console.log("Adding to cart:", {
-            mainProductVariantId: this.mainProductVariantId,
-            mainProductQty: mainProductQty,
-            displayCardVariantId: this.displayCardVariantId,
-            displayCardQty: displayCardQty,
-            displayCardAvailable: this.displayCardAvailable,
-            displayCardPrice: this.displayCardPrice,
-          });
 
           if (!this.mainProductVariantId) {
             throw new Error("Main product variant ID is missing");
@@ -475,11 +693,6 @@ if (!customElements.get("product-form-display-card")) {
             const isAvailable = this.displayCardAvailable !== false;
 
             if (isAvailable) {
-              console.log(
-                "Adding display card to cart:",
-                this.displayCardVariantId,
-                displayCardQty
-              );
               cartResponse = await this.addToCart(
                 this.displayCardVariantId.toString(), // Ensure it's a string
                 displayCardQty,
@@ -492,16 +705,8 @@ if (!customElements.get("product-form-display-card")) {
                     "Failed to add display card to cart"
                 );
               }
-            } else {
-              console.warn("Display card is not available, skipping");
             }
           } else {
-            console.warn("Display card not added:", {
-              hasVariantId: !!this.displayCardVariantId,
-              variantId: this.displayCardVariantId,
-              available: this.displayCardAvailable,
-              qty: displayCardQty,
-            });
             // If no display card, fetch cart with sections after main product add
             if (
               this.cart &&
@@ -525,6 +730,11 @@ if (!customElements.get("product-form-display-card")) {
               }
             }
           }
+
+          // Reset quantities to 1 and update price after successful add
+          // Main product was added successfully (we got past the status check)
+          // Display card was either added successfully or not needed
+          this.resetQuantitiesAndPrice();
 
           // Update cart UI and open drawer (using response from last add or fetched cart)
           if (this.cart && cartResponse && !cartResponse.status) {
@@ -587,7 +797,6 @@ if (!customElements.get("product-form-display-card")) {
 
           this.error = false;
         } catch (error) {
-          console.error("Error adding to cart:", error);
           if (
             typeof publish === "function" &&
             typeof PUB_SUB_EVENTS !== "undefined"
@@ -647,7 +856,7 @@ if (!customElements.get("product-form-display-card")) {
               formData.append("sections_url", window.location.pathname);
             }
           } catch (error) {
-            console.warn("Error getting sections to render:", error);
+            // Error getting sections to render
           }
         }
 
