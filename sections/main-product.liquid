@@ -287,7 +287,7 @@
                     aria-labelledby="quantity-label-{{ section.id }}"
                   >
                     <span aria-hidden="true">{{ 'products.product.quantity.label' | t }}</span>
-                    <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}" aria-hidden="true">
+                    <span class="quantity__rules-cart visually-hidden {% if cart_qty == 0 %} hidden{% endif %}" aria-hidden="true">
                       {%- render 'loading-spinner' -%}
                       <span
                         >(
@@ -521,9 +521,9 @@
                 {% render 'product-variant-picker', product: product, block: block, product_form_id: product_form_id %}
               {%- when 'buy_buttons' -%}
                 {%- liquid
-                  # Check if this is a capsule-display template
+                  # Check if this is a with-display template
                   assign is_capsule_display_template = false
-                  if template.name == 'product.capsule-display' or template.suffix == 'capsule-display'
+                  if template.name == 'product.with-display' or template.suffix == 'with-display'
                     assign is_capsule_display_template = true
                   endif
 

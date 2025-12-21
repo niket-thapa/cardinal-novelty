@@ -3,6 +3,12 @@
     "main": {
       "type": "main-product",
       "blocks": {
+        "sku_nFWnft": {
+          "type": "sku",
+          "settings": {
+            "text_style": "body"
+          }
+        },
         "title": {
           "type": "title",
           "settings": {}
@@ -30,12 +36,6 @@
             "delivery_info_text": "Ships same day from our warehouse!"
           }
         },
-        "capsule_display_7ahDaN": {
-          "type": "capsule-display",
-          "settings": {
-            "storefront_access_token": ""
-          }
-        },
         "buy_buttons": {
           "type": "buy_buttons",
           "settings": {
@@ -47,6 +47,12 @@
           "type": "description",
           "settings": {}
         },
+        "toy_display_MVwzBD": {
+          "type": "toy-display",
+          "settings": {
+            "storefront_access_token": ""
+          }
+        },
         "order_by_phone": {
           "type": "order-by-phone",
           "settings": {
@@ -57,26 +63,27 @@
         }
       },
       "block_order": [
+        "sku_nFWnft",
         "title",
         "price",
         "variant_picker",
         "quantity_selector",
         "delivery_info",
-        "capsule_display_7ahDaN",
         "buy_buttons",
         "description",
+        "toy_display_MVwzBD",
         "order_by_phone"
       ],
       "settings": {
         "enable_sticky_info": true,
         "color_scheme": "scheme-1",
-        "media_size": "large",
+        "media_size": "medium",
         "constrain_to_viewport": true,
         "media_fit": "contain",
         "gallery_layout": "thumbnail",
         "mobile_thumbnails": "show",
         "media_position": "left",
-        "image_zoom": "lightbox",
+        "image_zoom": "none",
         "hide_variants": true,
         "enable_video_looping": false,
         "padding_top": 52,
@@ -92,7 +99,7 @@
         "columns_desktop": 4,
         "columns_mobile": "2",
         "color_scheme": "scheme-1",
-        "image_ratio": "adapt",
+        "image_ratio": "square",
         "image_shape": "default",
         "show_secondary_image": true,
         "show_vendor": false,

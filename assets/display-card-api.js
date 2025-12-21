@@ -154,7 +154,7 @@ if (!customElements.get("display-card-api")) {
 
         const cartQty = await this.getCartQuantity(variant.id);
         const isAvailable = variant.available !== false;
-        const quantityMin = 1; // Default quantity should always be 1
+        const quantityMin = 0; // Default quantity starts at 0
         const quantityMax =
           variant.inventory_quantity > 0 ? variant.inventory_quantity : null;
 
@@ -189,9 +189,10 @@ if (!customElements.get("display-card-api")) {
         }
 
         // Product Content
+        const formattedPrice = this.formatMoney(variant.price);
         html += `
           <div class="display-card-content">
-            <h2 class="display-card-heading">ADD PAPER DISPLAY CARD</h2>
+            <h2 class="display-card-heading">ADD PAPER DISPLAY CARD - ${formattedPrice}</h2>
             
             <div class="display-card-quantity-wrapper">
               <div class="product-form__quantity display-card-quantity">
@@ -231,7 +232,7 @@ if (!customElements.get("display-card-api")) {
                     class="quantity__button" 
                     name="minus" 
                     type="button"
-                    ${!isAvailable || quantityMin <= 1 ? "disabled" : ""}
+                    ${!isAvailable || quantityMin <= 0 ? "disabled" : ""}
                   >
                     <span class="visually-hidden">
                       Decrease quantity for ${this.escapeHtml(product.title)}
@@ -292,6 +293,15 @@ if (!customElements.get("display-card-api")) {
         const div = document.createElement("div");
         div.textContent = text;
         return div.innerHTML;
+      }
+
+      formatMoney(price) {
+        // Format price (price from /products.json is already in dollars, not cents)
+        const dollars = parseFloat(price);
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(dollars);
       }
 
       getMinusIcon() {

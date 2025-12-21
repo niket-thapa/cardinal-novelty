@@ -202,8 +202,11 @@ product-info {
 .product-form__input legend {
   grid-column: span 2;
   margin-bottom: 0.7rem;
-  font-size: 1.8rem;
-  font-weight: 600;
+  font-family: var(--heading-font-family);
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: rgba(var(--color-foreground), 1);
+  text-transform: uppercase;
 }
 
 .product-form__input legend .selected_varient_name {

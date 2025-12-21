@@ -420,14 +420,14 @@ if (!customElements.get("product-form-display-card")) {
 
       getDisplayCardQuantity() {
         const displayCardBlock = document.querySelector(".display-card-block");
-        if (!displayCardBlock) return 1;
+        if (!displayCardBlock) return 0;
 
         const quantityInput =
           displayCardBlock.querySelector(".quantity__input");
-        if (!quantityInput) return 1;
+        if (!quantityInput) return 0;
 
-        const quantity = parseInt(quantityInput.value) || 1;
-        return Math.max(1, quantity);
+        const quantity = parseInt(quantityInput.value) || 0;
+        return Math.max(0, quantity);
       }
 
       updateCombinedPrice() {
@@ -591,13 +591,13 @@ if (!customElements.get("product-form-display-card")) {
           }
         }
 
-        // Reset display card quantity to 1
+        // Reset display card quantity to 0
         const displayCardBlock = document.querySelector(".display-card-block");
         if (displayCardBlock) {
           const displayCardQuantityInput =
             displayCardBlock.querySelector(".quantity__input");
           if (displayCardQuantityInput) {
-            displayCardQuantityInput.value = 1;
+            displayCardQuantityInput.value = 0;
             displayCardQuantityInput.dispatchEvent(
               new Event("change", { bubbles: true })
             );
@@ -669,11 +669,17 @@ if (!customElements.get("product-form-display-card")) {
             throw new Error("Main product variant ID is missing");
           }
 
-          // Add main product to cart (without sections for first add)
+          // Determine if we need to add display card
+          const shouldAddDisplayCard =
+            this.displayCardVariantId && displayCardQty > 0;
+
+          // Add main product to cart
+          // Include sections if we're NOT adding display card (so we get sections in response)
+          // If we ARE adding display card, get sections on the second add
           const mainProductResponse = await this.addToCart(
             this.mainProductVariantId.toString(),
             mainProductQty,
-            false // Don't include sections for first add
+            !shouldAddDisplayCard // Include sections if not adding display card
           );
 
           if (mainProductResponse.status) {
@@ -684,11 +690,11 @@ if (!customElements.get("product-form-display-card")) {
           }
 
           // Add display card product to cart WITH sections (this gives us updated cart with sections)
-          let cartResponse = null;
+          let cartResponse = mainProductResponse; // Default to main product response
 
           // Always try to add display card if we have variant ID and quantity > 0
           // Only skip if explicitly unavailable
-          if (this.displayCardVariantId && displayCardQty > 0) {
+          if (shouldAddDisplayCard) {
             // Check availability - default to true if not set
             const isAvailable = this.displayCardAvailable !== false;
 
@@ -704,29 +710,6 @@ if (!customElements.get("product-form-display-card")) {
                   cartResponse.description ||
                     "Failed to add display card to cart"
                 );
-              }
-            }
-          } else {
-            // If no display card, fetch cart with sections after main product add
-            if (
-              this.cart &&
-              typeof this.cart.getSectionsToRender === "function"
-            ) {
-              const sectionsToRender = this.cart.getSectionsToRender();
-              const sectionIds = sectionsToRender
-                .map((section) => section.id || section.section)
-                .filter(Boolean);
-
-              if (sectionIds.length > 0) {
-                const cartUrl = `${
-                  (window.routes && window.routes.cart_url) || "/cart"
-                }.js`;
-                const sectionsParam = sectionIds.join(",");
-                const fetchUrl = `${cartUrl}?sections=${encodeURIComponent(
-                  sectionsParam
-                )}`;
-                const response = await fetch(fetchUrl);
-                cartResponse = await response.json();
               }
             }
           }
