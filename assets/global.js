@@ -333,6 +333,15 @@ class QuantityInput extends HTMLElement {
     this.validateQtyRules();
   }
 
+  isDisplayCardQuantity() {
+    // Check if this quantity input is for a display card product
+    return (
+      this.classList.contains("display-card-quantity-input") ||
+      this.closest(".display-card-block") !== null ||
+      this.closest(".display-card-quantity") !== null
+    );
+  }
+
   onButtonClick(event) {
     event.preventDefault();
 
@@ -382,7 +391,10 @@ class QuantityInput extends HTMLElement {
       }
     } else if (buttonName === "minus") {
       // Handle decrement
-      if (previousValue <= 1) {
+      const isDisplayCard = this.isDisplayCardQuantity();
+      const minAllowedValue = isDisplayCard ? 0 : 1;
+
+      if (previousValue <= minAllowedValue) {
         // Should be disabled, but if somehow clicked, don't change
         return;
       }
@@ -396,10 +408,10 @@ class QuantityInput extends HTMLElement {
         this.input.value = min;
       }
 
-      // Ensure value doesn't go below 1
-      if (newValue < 1) {
-        newValue = 1;
-        this.input.value = 1;
+      // Ensure value doesn't go below minimum allowed (0 for display card, 1 for others)
+      if (newValue < minAllowedValue) {
+        newValue = minAllowedValue;
+        this.input.value = minAllowedValue;
       }
     }
 
@@ -413,8 +425,10 @@ class QuantityInput extends HTMLElement {
     const value = parseInt(this.input.value);
     const buttonMinus = this.querySelector(".quantity__button[name='minus']");
     if (buttonMinus) {
-      buttonMinus.disabled = value <= 1;
-      buttonMinus.classList.toggle("disabled", value <= 1);
+      const isDisplayCard = this.isDisplayCardQuantity();
+      const minAllowedValue = isDisplayCard ? 0 : 1;
+      buttonMinus.disabled = value <= minAllowedValue;
+      buttonMinus.classList.toggle("disabled", value <= minAllowedValue);
     }
     if (this.input.max) {
       const max = parseInt(this.input.max);
