@@ -63,7 +63,7 @@ if (!customElements.get("product-form-display-card")) {
           }, 500);
         }
 
-        // Listen for display card quantity changes
+        // Listen for display card quantity changes using event delegation
         this.setupDisplayCardQuantityListener();
 
         // Listen for main product quantity changes
@@ -86,14 +86,22 @@ if (!customElements.get("product-form-display-card")) {
             if (event.detail.available !== undefined) {
               this.displayCardAvailable = event.detail.available;
             }
-            // Re-setup quantity listener after display card is loaded
-            this.setupDisplayCardQuantityListener();
+            // Update price after display card is loaded
             this.updateCombinedPrice();
           }
         };
         document.addEventListener(
           "display-card-loaded",
           this.displayCardLoadedHandler
+        );
+
+        // Listen for display card quantity change custom event (dispatched from display-card-api)
+        this.displayCardQuantityChangeHandler = (event) => {
+          this.updateCombinedPrice();
+        };
+        document.addEventListener(
+          "display-card-quantity-change",
+          this.displayCardQuantityChangeHandler
         );
 
         // Initial price update (will be called again after API data loads)
@@ -178,74 +186,42 @@ if (!customElements.get("product-form-display-card")) {
       }
 
       setupDisplayCardQuantityListener() {
-        // Find display card quantity input - use a function to retry if not found
-        const setupListeners = () => {
-          const displayCardBlock = document.querySelector(
-            ".display-card-block"
-          );
-          if (!displayCardBlock) {
-            // Retry after a delay if block not found yet
-            setTimeout(setupListeners, 500);
-            return;
-          }
-
-          const quantityInput =
-            displayCardBlock.querySelector(".quantity__input");
-          if (!quantityInput) {
-            // Retry after a delay if input not found yet
-            setTimeout(setupListeners, 500);
-            return;
-          }
-
-          // Listen for quantity changes on the input
-          const handleQuantityChange = () => {
+        // Use event delegation on document to catch all quantity changes
+        // This is more reliable than trying to attach listeners to elements that may not exist yet
+        const handleQuantityChange = (event) => {
+          // Check if the change is from a display card quantity input
+          const target = event.target;
+          if (
+            target &&
+            target.classList.contains("quantity__input") &&
+            (target.closest(".display-card-block") ||
+              target.closest(".display-card-quantity") ||
+              target.closest("display-card-api"))
+          ) {
             this.updateCombinedPrice();
-          };
-
-          quantityInput.addEventListener("change", handleQuantityChange);
-          quantityInput.addEventListener("input", handleQuantityChange);
-
-          // Also listen to quantity-input custom element events
-          const quantityInputElement =
-            displayCardBlock.querySelector("quantity-input");
-          if (quantityInputElement) {
-            quantityInputElement.addEventListener(
-              "change",
-              handleQuantityChange
-            );
-
-            // Listen to the input inside the quantity-input element
-            const innerInput =
-              quantityInputElement.querySelector(".quantity__input");
-            if (innerInput) {
-              innerInput.addEventListener("change", handleQuantityChange);
-              innerInput.addEventListener("input", handleQuantityChange);
-            }
-          }
-
-          // Also listen for button clicks (plus/minus buttons) - these trigger change events
-          const minusButton = displayCardBlock.querySelector(
-            '.quantity__button[name="minus"]'
-          );
-          const plusButton = displayCardBlock.querySelector(
-            '.quantity__button[name="plus"]'
-          );
-
-          if (minusButton) {
-            minusButton.addEventListener("click", () => {
-              setTimeout(() => this.updateCombinedPrice(), 150);
-            });
-          }
-
-          if (plusButton) {
-            plusButton.addEventListener("click", () => {
-              setTimeout(() => this.updateCombinedPrice(), 150);
-            });
           }
         };
 
-        // Start setting up listeners
-        setupListeners();
+        // Listen for change and input events on document (event delegation)
+        document.addEventListener("change", handleQuantityChange);
+        document.addEventListener("input", handleQuantityChange);
+
+        // Also listen for change events on quantity-input custom elements
+        document.addEventListener("change", (event) => {
+          const target = event.target;
+          if (
+            target &&
+            target.tagName === "QUANTITY-INPUT" &&
+            (target.classList.contains("display-card-quantity-input") ||
+              target.closest(".display-card-block") ||
+              target.closest("display-card-api"))
+          ) {
+            this.updateCombinedPrice();
+          }
+        });
+
+        // Store handlers for cleanup
+        this.displayCardQuantityHandlers = [handleQuantityChange];
       }
 
       setupMainProductQuantityListener() {
@@ -378,6 +354,24 @@ if (!customElements.get("product-form-display-card")) {
         }
         if (this.quantityUpdateUnsubscriber) {
           this.quantityUpdateUnsubscriber();
+        }
+        if (this.displayCardLoadedHandler) {
+          document.removeEventListener(
+            "display-card-loaded",
+            this.displayCardLoadedHandler
+          );
+        }
+        if (this.displayCardQuantityChangeHandler) {
+          document.removeEventListener(
+            "display-card-quantity-change",
+            this.displayCardQuantityChangeHandler
+          );
+        }
+        if (this.displayCardQuantityHandlers) {
+          this.displayCardQuantityHandlers.forEach((handler) => {
+            document.removeEventListener("change", handler);
+            document.removeEventListener("input", handler);
+          });
         }
       }
 

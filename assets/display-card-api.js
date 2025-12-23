@@ -15,6 +15,39 @@ if (!customElements.get("display-card-api")) {
 
         // Start fetching product data
         this.loadProduct();
+
+        // Set up MutationObserver to re-attach listeners if DOM is replaced
+        this.setupMutationObserver();
+      }
+
+      setupMutationObserver() {
+        // Observe changes to the element's children
+        // This ensures listeners are re-attached if innerHTML is replaced
+        if (this.observer) {
+          this.observer.disconnect();
+        }
+
+        this.observer = new MutationObserver((mutations) => {
+          // Check if quantity input was added or replaced
+          const hasQuantityInput =
+            this.querySelector("quantity-input") ||
+            this.querySelector(".quantity__input");
+
+          // Re-attach listeners if elements exist but listeners might not be attached
+          // Use a debounce to avoid multiple rapid calls
+          if (hasQuantityInput) {
+            clearTimeout(this.setupListenerTimeout);
+            this.setupListenerTimeout = setTimeout(() => {
+              // Always re-setup listeners when DOM changes (elements might have been replaced)
+              this.setupQuantityChangeListener();
+            }, 100);
+          }
+        });
+
+        this.observer.observe(this, {
+          childList: true,
+          subtree: true,
+        });
       }
 
       showLoading() {
@@ -105,6 +138,16 @@ if (!customElements.get("display-card-api")) {
         if (this.cartUpdateUnsubscriber) {
           this.cartUpdateUnsubscriber();
         }
+        if (this.observer) {
+          this.observer.disconnect();
+        }
+        if (this.quantityChangeHandlers) {
+          this.quantityChangeHandlers.forEach(({ element, event, handler }) => {
+            element.removeEventListener(event, handler);
+          });
+          this.quantityChangeHandlers = [];
+        }
+        this.quantityListenersAttached = false;
       }
 
       async fetchProduct(productId) {
@@ -283,6 +326,154 @@ if (!customElements.get("display-card-api")) {
             ${html}
           </div>
         `;
+
+        // Set up quantity change listeners after rendering
+        this.setupQuantityChangeListener();
+      }
+
+      setupQuantityChangeListener() {
+        // Clear any existing listeners to avoid duplicates
+        if (this.quantityChangeHandlers) {
+          this.quantityChangeHandlers.forEach(({ element, event, handler }) => {
+            element.removeEventListener(event, handler);
+          });
+        }
+        this.quantityChangeHandlers = [];
+
+        // Wait a bit for the quantity-input custom element to be defined
+        const setupListeners = () => {
+          const quantityInputElement = this.querySelector("quantity-input");
+          const quantityInput = this.querySelector(".quantity__input");
+
+          if (!quantityInputElement && !quantityInput) {
+            // Retry if elements not ready yet (max 10 attempts)
+            if (!this.setupRetries) {
+              this.setupRetries = 0;
+            }
+            if (this.setupRetries < 10) {
+              this.setupRetries++;
+              setTimeout(setupListeners, 100);
+            }
+            return;
+          }
+
+          this.setupRetries = 0; // Reset retry counter on success
+
+          // Handler to dispatch custom event when quantity changes
+          const handleQuantityChange = (event) => {
+            const input = event.target;
+            const quantity = parseInt(input.value) || 0;
+
+            // Dispatch custom event that bubbles up
+            this.dispatchEvent(
+              new CustomEvent("display-card-quantity-change", {
+                detail: {
+                  quantity: quantity,
+                  variantId:
+                    input.dataset.variantId ||
+                    quantityInputElement?.dataset.variantId,
+                },
+                bubbles: true,
+              })
+            );
+          };
+
+          // Listen on the input element
+          if (quantityInput) {
+            quantityInput.addEventListener("change", handleQuantityChange);
+            quantityInput.addEventListener("input", handleQuantityChange);
+            this.quantityChangeHandlers.push(
+              {
+                element: quantityInput,
+                event: "change",
+                handler: handleQuantityChange,
+              },
+              {
+                element: quantityInput,
+                event: "input",
+                handler: handleQuantityChange,
+              }
+            );
+          }
+
+          // Listen on the quantity-input custom element
+          if (quantityInputElement) {
+            quantityInputElement.addEventListener(
+              "change",
+              handleQuantityChange
+            );
+            this.quantityChangeHandlers.push({
+              element: quantityInputElement,
+              event: "change",
+              handler: handleQuantityChange,
+            });
+
+            // Also listen to the inner input
+            const innerInput =
+              quantityInputElement.querySelector(".quantity__input");
+            if (innerInput) {
+              innerInput.addEventListener("change", handleQuantityChange);
+              innerInput.addEventListener("input", handleQuantityChange);
+              this.quantityChangeHandlers.push(
+                {
+                  element: innerInput,
+                  event: "change",
+                  handler: handleQuantityChange,
+                },
+                {
+                  element: innerInput,
+                  event: "input",
+                  handler: handleQuantityChange,
+                }
+              );
+            }
+          }
+
+          // Listen for button clicks (plus/minus buttons)
+          const minusButton = this.querySelector(
+            '.quantity__button[name="minus"]'
+          );
+          const plusButton = this.querySelector(
+            '.quantity__button[name="plus"]'
+          );
+
+          const handleButtonClick = (isPlus) => {
+            return () => {
+              setTimeout(() => {
+                const input = this.querySelector(".quantity__input");
+                if (input) {
+                  handleQuantityChange({ target: input });
+                }
+              }, 150);
+            };
+          };
+
+          if (minusButton) {
+            const handler = handleButtonClick(false);
+            minusButton.addEventListener("click", handler);
+            this.quantityChangeHandlers.push({
+              element: minusButton,
+              event: "click",
+              handler: handler,
+            });
+          }
+
+          if (plusButton) {
+            const handler = handleButtonClick(true);
+            plusButton.addEventListener("click", handler);
+            this.quantityChangeHandlers.push({
+              element: plusButton,
+              event: "click",
+              handler: handler,
+            });
+          }
+
+          // Mark listeners as attached
+          this.quantityListenersAttached = true;
+        };
+
+        // Start setting up listeners
+        setupListeners();
       }
 
       showError(message) {
