@@ -51,8 +51,8 @@
   <div class="facets-container{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}"><div class="product-count" role="status">
     <h2>
       <span id="ProductCount">
-        {%- if results.results_count -%}
-        {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+        {%- if results.results_count and results.terms -%}
+        {{ 'templates.search.results_with_count' | t: terms: results.terms, count: filtered_products_count }}
         {%- else -%}
         {{ 'products.facets.product_count_simple' | t: count: filtered_products_count }}
         {%- endif -%}
@@ -451,14 +451,14 @@
           <div class="product-count light" role="status">
             <h2 class="product-count__text text-body">
               <span id="ProductCountDesktop">
-                {%- if results.results_count -%}
-                  {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+                {%- if results.results_count and results.terms -%}
+                  {{ 'templates.search.results_with_count' | t: terms: results.terms, count: filtered_products_count }}
                 {%- elsif results.products_count == results.all_products_count -%}
-                  {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+                  {{ 'products.facets.product_count_simple' | t: count: filtered_products_count }}
                 {%- else -%}
                   {{
                     'products.facets.product_count'
-                    | t: product_count: results.products_count, count: results.all_products_count
+                    | t: product_count: filtered_products_count, count: results.all_products_count
                   }}
                 {%- endif -%}
               </span>
@@ -524,14 +524,14 @@
                   {%- endif -%}
                 </h2>
                 <p class="mobile-facets__count">
-                  {%- if results.results_count -%}
-                    {{ 'templates.search.results_with_count' | t: terms: results.terms, count: results.results_count }}
+                  {%- if results.results_count and results.terms -%}
+                    {{ 'templates.search.results_with_count' | t: terms: results.terms, count: filtered_products_count }}
                   {%- elsif results.products_count == results.all_products_count -%}
-                    {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+                    {{ 'products.facets.product_count_simple' | t: count: filtered_products_count }}
                   {%- else -%}
                     {{
                       'products.facets.product_count'
-                      | t: product_count: results.products_count, count: results.all_products_count
+                      | t: product_count: filtered_products_count, count: results.all_products_count
                     }}
                   {%- endif -%}
                 </p>

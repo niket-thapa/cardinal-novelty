@@ -435,7 +435,7 @@
     transform: scale(1.03);
   }
 
-  .underline-links-hover:hover a {
+  .underline-links-hover:hover a:not(.button) {
     text-decoration: underline;
     text-underline-offset: 0.3rem;
   }

@@ -7,6 +7,7 @@ if (!customElements.get("display-card-api")) {
         this.productId = window.displayCardData?.productId;
         this.sectionId = window.displayCardData?.sectionId;
         this.blockId = window.displayCardData?.blockId;
+        this.productHandle = window.displayCardData?.productHandle;
       }
 
       connectedCallback() {
@@ -67,13 +68,16 @@ if (!customElements.get("display-card-api")) {
       }
 
       async loadProduct() {
-        if (!this.productId) {
+        if (!this.productHandle && !this.productId) {
           this.innerHTML = "";
           return;
         }
 
         try {
-          const product = await this.fetchProduct(this.productId);
+          const product = this.productHandle
+            ? await this.fetchProductByHandle(this.productHandle)
+            : await this.fetchProduct(this.productId);
+          console.log(product);
           if (product) {
             await this.renderProduct(product);
             // Listen for cart updates to refresh quantity
@@ -148,6 +152,24 @@ if (!customElements.get("display-card-api")) {
           this.quantityChangeHandlers = [];
         }
         this.quantityListenersAttached = false;
+      }
+
+      async fetchProductByHandle(productHandle) {
+        // Use Shopify.routes.root if available, otherwise use root path
+        const root = window.Shopify?.routes?.root || "/";
+        const url = `${root}products/${productHandle}.js`;
+
+        try {
+          const response = await fetch(url);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch product: ${response.status}`);
+          }
+          const product = await response.json();
+          return product || null;
+        } catch (error) {
+          console.error("Error fetching product by handle:", error);
+          return null;
+        }
       }
 
       async fetchProduct(productId) {

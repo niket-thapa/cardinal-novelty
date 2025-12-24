@@ -31,6 +31,11 @@ section: section
   endif
 -%}
 
+{% liquid
+  assign display_card_products = display_card_metafield.value
+  assign display_card_product_handle = display_card_products.handle
+%}
+
 {%- if display_card_product_id != blank -%}
   <div class="display-card-block" {{ block.shopify_attributes }}>
     <div class="display-card-container">
@@ -46,7 +51,8 @@ section: section
     window.displayCardData = {
       productId: {{ display_card_product_id | json }},
       sectionId: {{ section.id | json }},
-      blockId: {{ block.id | json }}
+      blockId: {{ block.id | json }},
+      productHandle: '{{ display_card_product_handle }}'
     };
   </script>
   <script src="{{ 'display-card-api.js' | asset_url }}" defer="defer"></script>

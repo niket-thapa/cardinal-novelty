@@ -33,6 +33,11 @@ section: section
 
 {{ 'component-toy-capsule.css' | asset_url | stylesheet_tag }}
 
+{% liquid
+  assign toy_capsule_products = toy_capsule_metafield.value
+  assign toy_capsule_product_handle = toy_capsule_products.handle
+%}
+
 {%- if toy_display_product_id != blank -%}
   <div class="toy-capsule-block" {{ block.shopify_attributes }}>
     <div class="toy-capsule-container">
@@ -48,7 +53,8 @@ section: section
   <script>
     window.toyCapsuleData = window.toyCapsuleData || {};
     window.toyCapsuleData = {
-      productId: {{ toy_display_product_id | json }}
+      productId: {{ toy_display_product_id | json }},
+      productHandle: '{{ toy_capsule_product_handle }}'
     };
   </script>
   <script src="{{ 'toy-capsule-api.js' | asset_url }}" defer="defer"></script>

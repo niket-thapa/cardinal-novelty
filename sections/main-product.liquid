@@ -523,7 +523,7 @@
                 {%- liquid
                   # Check if this is a with-display template
                   assign is_capsule_display_template = false
-                  if template.name == 'product.with-display' or template.suffix == 'with-display'
+                  if template.name == 'product.with-display' or template.suffix == 'with-display' or template.name == 'product.with-display-generic' or template.suffix == 'with-display-generic'
                     assign is_capsule_display_template = true
                   endif
 
