@@ -13,7 +13,7 @@
     assign pieces_price = price | divided_by: pieces | floor
     assign pieces_price_formatted = pieces_price | money
   -%}
-  <small class="unit-price caption">
+  <small class="unit-price caption adsdas">
     <span class="visually-hidden">{{ 'products.product.price.unit_price' | t }}</span>
     <span class="price-item price-item--last">
       ({{ pieces_price_formatted }}/piece)

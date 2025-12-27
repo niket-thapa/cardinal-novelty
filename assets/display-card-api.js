@@ -77,7 +77,7 @@ if (!customElements.get("display-card-api")) {
           const product = this.productHandle
             ? await this.fetchProductByHandle(this.productHandle)
             : await this.fetchProduct(this.productId);
-          console.log(product);
+
           if (product) {
             await this.renderProduct(product);
             // Listen for cart updates to refresh quantity
@@ -85,11 +85,14 @@ if (!customElements.get("display-card-api")) {
 
             // Dispatch custom event to notify that display card data is loaded
             // This allows product-form-display-card to update the price
+            // Convert price from cents to dollars for the event
+            const priceInCents = product.variants[0]?.price || 0;
+            const priceInDollars = priceInCents / 100;
             this.dispatchEvent(
               new CustomEvent("display-card-loaded", {
                 detail: {
                   variantId: product.variants[0]?.id,
-                  price: product.variants[0]?.price,
+                  price: priceInDollars,
                   available: product.variants[0]?.available,
                 },
                 bubbles: true,
@@ -291,7 +294,7 @@ if (!customElements.get("display-card-api")) {
                   data-url="/products/${product.handle}" 
                   data-section="${this.sectionId}"
                   data-variant-id="${variant.id}"
-                  data-variant-price="${variant.price}"
+                  data-variant-price="${variant.price / 100}"
                 >
                   <button 
                     class="quantity__button" 
@@ -509,8 +512,8 @@ if (!customElements.get("display-card-api")) {
       }
 
       formatMoney(price) {
-        // Format price (price from /products.json is already in dollars, not cents)
-        const dollars = parseFloat(price);
+        // Convert price from cents to dollars (Shopify APIs return prices in cents)
+        const dollars = parseFloat(price) / 100;
         return new Intl.NumberFormat("en-US", {
           style: "currency",
           currency: "USD",

@@ -1452,11 +1452,30 @@ customElements.define("variant-selects", VariantSelects);
     );
   }
 
+  function isDisplayGenericTemplate() {
+    return (
+      document.body.hasAttribute("data-template") &&
+      document.body.getAttribute("data-template") === "with-display-generic"
+    );
+  }
+
   function updateVariantInfoNotes(variant) {
     if (!variant || !variant.id || !variant.options) return;
 
     const variantSelects = document.querySelector("variant-selects");
     if (!variantSelects) return;
+
+    // Hide variant-info-note divs for product.with-display-generic template
+    if (isDisplayGenericTemplate()) {
+      const variantInfoNotes = variantSelects.querySelectorAll(
+        "[data-variant-info-note]"
+      );
+      variantInfoNotes.forEach((note) => {
+        note.textContent = "";
+        note.style.display = "none";
+      });
+      return;
+    }
 
     const isCapsuleDisplay = isCapsuleDisplayTemplate();
     const variantInfoNotes = variantSelects.querySelectorAll(
