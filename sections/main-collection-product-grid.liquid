@@ -23,6 +23,7 @@
 {%- endif -%}
 <script src="{{ 'collection-product-grid.js' | asset_url }}" defer="defer"></script>
 <script src="{{ 'infinite-scroll.js' | asset_url }}" defer="defer"></script>
+<script src="{{ 'product-count.js' | asset_url }}" defer="defer"></script>
 
 {%- style -%}
   .section-{{ section.id }}-padding {
@@ -40,7 +41,22 @@
   <div class="page-width collection-ship-info">All orders ship fast from our 100,000 square foot warehouse</div>
 
 <div class="section-{{ section.id }}-padding gradient color-{{ section.settings.color_scheme }}" data-section-id="{{ section.id }}" data-products-per-page="{{ section.settings.products_per_page }}">
+  {%- liquid
+    # Count available and not hidden products on current page (before pagination)
+    assign available_count_on_page = 0
+    
+    for product in collection.products
+      if product.metafields.custom.hide_from_listings.value != true and product.available
+        assign available_count_on_page = available_count_on_page | plus: 1
+      endif
+    endfor
+    
+    # Use available_count_on_page as the filtered_products_count
+    assign filtered_products_count = available_count_on_page
+  -%}
   {%- paginate collection.products by section.settings.products_per_page -%}
+    {%- assign has_next_page = paginate.next -%}
+    <div data-has-next-page="{% if has_next_page %}true{% else %}false{% endif %}" data-current-page="{{ paginate.current_page }}" data-total-pages="{{ paginate.pages }}" style="display: none;"></div>
     {% comment %} Sort is the first tabbable element when filter type is vertical {% endcomment %}
     {%- if section.settings.enable_sorting and section.settings.filter_type == 'vertical' -%}
       <facet-filters-form class="facets facets-vertical-sort page-width small-hide">
@@ -76,20 +92,7 @@
             </div>
           </div>
 
-          {%- comment -%} Count filtered products (available and not hidden) {%- endcomment -%}
-          {%- liquid
-            assign filtered_products_count = 0
-            
-            for product in collection.products
-              if product.metafields.custom.hide_from_listings.value != true and product.available
-                assign filtered_products_count = filtered_products_count | plus: 1
-              endif
-            endfor
-            
-            if filtered_products_count == 0 and collection.products_count
-              assign filtered_products_count = collection.products_count
-            endif
-          -%}
+          {%- comment -%} Use the filtered_products_count calculated above {%- endcomment -%}
           <div class="product-count-vertical light" role="status">
             <h2 class="product-count__text text-body">
               <span id="ProductCountDesktop">
@@ -124,7 +127,9 @@
             enable_filtering: section.settings.enable_filtering,
             enable_sorting: section.settings.enable_sorting,
             filter_type: section.settings.filter_type,
-            paginate: paginate
+            paginate: paginate,
+            filtered_products_count: filtered_products_count,
+            available_count_on_page: available_count_on_page
           %}
         </aside>
       {%- endif -%}
@@ -195,7 +200,7 @@
                 {%- endif -%}
               {%- endfor -%}
               {%- comment -%} Infinite scroll loading indicator {%- endcomment -%}
-              <li class="grid__item" id="infinite-scroll-loader" style="display: none; grid-column: 1 / -1;">
+              <li class="grid__item" id="infinite-scroll-loader" style="display: none; grid-column: 1 / -1; width: 100%; max-width: 100%;">
                 <div class="infinite-scroll-loader">
                   <div class="loading__spinner">
                     <svg xmlns="http://www.w3.org/2000/svg" class="spinner" viewBox="0 0 66 66">

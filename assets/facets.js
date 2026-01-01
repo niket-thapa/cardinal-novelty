@@ -106,6 +106,60 @@ class FacetFiltersForm extends HTMLElement {
       '.facets-container .loading__spinner, facet-filters-form .loading__spinner'
     );
     loadingSpinners.forEach((spinner) => spinner.classList.add('hidden'));
+    
+    // Reset the final count flag when filters change, then update count
+    if (container) {
+      container.removeAttribute('data-final-count-set');
+      // Hide count again when filters change
+      container.style.opacity = '0';
+    }
+    if (containerDesktop) {
+      containerDesktop.removeAttribute('data-final-count-set');
+      containerDesktop.style.opacity = '0';
+    }
+    
+    // Update count with actual visible products (excluding hidden/out of stock)
+    // Force update when filters change
+    FacetFiltersForm.updateVisibleProductCount(true);
+  }
+
+  static updateVisibleProductCount(forceUpdate = false) {
+    // Don't update if product-count.js is handling the count
+    // product-count.js will show the count when it's done
+    if (window.productCountInstance && window.productCountInstance.isCounting) {
+      return;
+    }
+
+    // Liquid handles the counting - JavaScript just handles the display (opacity)
+    const container = document.getElementById('ProductCount');
+    const containerDesktop = document.getElementById('ProductCountDesktop');
+    
+    if (!container) return;
+
+    // Hide count initially (opacity 0) until page is ready
+    if (container.getAttribute('data-final-count-set') !== 'true') {
+      container.style.opacity = '0';
+      if (containerDesktop) {
+        containerDesktop.style.opacity = '0';
+      }
+    }
+
+    // Check if we've already shown the count
+    if (!forceUpdate && container.getAttribute('data-final-count-set') === 'true') {
+      return;
+    }
+
+    // Show the count (Liquid has already calculated it based on available products)
+    container.style.opacity = '1';
+    if (containerDesktop) {
+      containerDesktop.style.opacity = '1';
+    }
+    
+    // Mark that we've shown the count
+    container.setAttribute('data-final-count-set', 'true');
+    if (containerDesktop) {
+      containerDesktop.setAttribute('data-final-count-set', 'true');
+    }
   }
 
   static renderFilters(html, event) {
@@ -363,3 +417,40 @@ class FacetRemove extends HTMLElement {
 }
 
 customElements.define('facet-remove', FacetRemove);
+
+// Update visible product count on page load and after products are loaded
+(function() {
+  function hideInitialCount() {
+    // Don't hide if product-count.js is handling it
+    // product-count.js will show "Counting..." immediately
+    if (window.productCountInstance) {
+      return;
+    }
+    
+    // Hide count initially until final count is calculated
+    const container = document.getElementById('ProductCount');
+    const containerDesktop = document.getElementById('ProductCountDesktop');
+    if (container) {
+      container.style.opacity = '0';
+      container.style.transition = 'opacity 0.3s ease-in-out';
+    }
+    if (containerDesktop) {
+      containerDesktop.style.opacity = '0';
+      containerDesktop.style.transition = 'opacity 0.3s ease-in-out';
+    }
+  }
+
+  // Hide count on initial page load only if product-count.js is not present
+  // product-count.js will show "Counting..." immediately
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      // Wait a bit to check if product-count.js initialized
+      setTimeout(hideInitialCount, 50);
+    });
+  } else {
+    setTimeout(hideInitialCount, 50);
+  }
+
+  // Also update when infinite scroll loads more products (handled in infinite-scroll.js)
+  // Update when filters change (already handled in renderProductCount)
+})();

@@ -22,6 +22,15 @@ class InfiniteScroll {
       if (perPage) {
         this.productsPerPage = parseInt(perPage, 10);
       }
+      
+      // Check if there are more pages from hidden data element
+      const paginationData = sectionElement.querySelector('[data-has-next-page]');
+      if (paginationData) {
+        const hasNextPage = paginationData.dataset.hasNextPage === "true";
+        if (!hasNextPage) {
+          this.hasMorePages = false;
+        }
+      }
     }
 
     // Set up intersection observer for infinite scroll
@@ -46,8 +55,13 @@ class InfiniteScroll {
       });
     }, options);
 
-    if (this.loader) {
+    if (this.loader && this.hasMorePages) {
+      // Show loader if there are more pages to load
+      this.loader.style.display = "block";
       this.observer.observe(this.loader);
+    } else if (this.loader) {
+      // Hide loader if no more pages
+      this.loader.style.display = "none";
     }
   }
 
@@ -93,8 +107,18 @@ class InfiniteScroll {
       const html = await response.text();
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, "text/html");
-      const newContainer = doc.getElementById("ProductGridContainer");
       
+      // Find the section element first to get pagination data
+      const sectionElement = doc.querySelector(`[data-section-id="${this.sectionId}"]`);
+      if (!sectionElement) {
+        this.hasMorePages = false;
+        if (this.loader) {
+          this.loader.style.display = "none";
+        }
+        return;
+      }
+      
+      const newContainer = doc.getElementById("ProductGridContainer");
       if (!newContainer) {
         this.hasMorePages = false;
         if (this.loader) {
@@ -112,7 +136,9 @@ class InfiniteScroll {
         return;
       }
 
-      const newProducts = Array.from(newProductGrid.querySelectorAll("li.grid__item"));
+      // Get products, excluding the loader element
+      const allItems = Array.from(newProductGrid.querySelectorAll("li.grid__item"));
+      const newProducts = allItems.filter(item => item.id !== "infinite-scroll-loader");
       
       if (newProducts.length === 0) {
         this.hasMorePages = false;
@@ -121,6 +147,46 @@ class InfiniteScroll {
         }
         return;
       }
+
+      // Check if there are more pages BEFORE appending products
+      // This is the most reliable way to check - use the section element we found earlier
+      let hasMorePages = false;
+      
+      // Find pagination data in the section element
+      const paginationData = sectionElement.querySelector('[data-has-next-page]');
+      if (paginationData) {
+        hasMorePages = paginationData.dataset.hasNextPage === "true";
+        const currentPage = parseInt(paginationData.dataset.currentPage) || 0;
+        const totalPages = parseInt(paginationData.dataset.totalPages) || 0;
+        console.log(`Infinite scroll: Loaded page ${currentPage} of ${totalPages}, hasNext: ${hasMorePages}, visible products: ${newProducts.length}`);
+      } else {
+        // Fallback: check pagination info if it exists
+        const paginationInfo = newContainer.querySelector(".pagination");
+        if (paginationInfo) {
+          const nextPageLink = paginationInfo.querySelector('a[aria-label*="Next"], .pagination__item--next:not(.disabled)');
+          hasMorePages = !!nextPageLink;
+          console.log(`Infinite scroll: Using pagination UI fallback, hasNext: ${hasMorePages}`);
+        } else {
+          // Last fallback: check if current page is less than total pages
+          // This is more reliable than product count when products are filtered
+          const currentPageData = sectionElement.querySelector('[data-current-page]');
+          const totalPagesData = sectionElement.querySelector('[data-total-pages]');
+          if (currentPageData && totalPagesData) {
+            const currentPage = parseInt(currentPageData.dataset.currentPage) || 0;
+            const totalPages = parseInt(totalPagesData.dataset.totalPages) || 0;
+            hasMorePages = currentPage < totalPages;
+            console.log(`Infinite scroll: Using page count fallback, page ${currentPage} of ${totalPages}, hasNext: ${hasMorePages}`);
+          } else {
+            // Very last fallback: if we got products, assume there might be more (unless we got 0)
+            hasMorePages = newProducts.length > 0;
+            console.log(`Infinite scroll: No pagination data found, assuming hasMorePages: ${hasMorePages} (got ${newProducts.length} products)`);
+          }
+        }
+      }
+      
+      // IMPORTANT: Update hasMorePages based on pagination data ONLY
+      // Do NOT use product count because products can be filtered/hidden
+      this.hasMorePages = hasMorePages;
 
       // Append new products to the grid (before the loader)
       newProducts.forEach((product) => {
@@ -142,8 +208,10 @@ class InfiniteScroll {
       });
 
       // Initialize any new scripts/elements
+      // Note: initializeScrollAnimationTrigger expects a DOM element, not HTML string
       if (typeof initializeScrollAnimationTrigger === "function") {
-        initializeScrollAnimationTrigger(this.productGrid.innerHTML);
+        // Pass the product grid element to initialize animations for newly added products
+        initializeScrollAnimationTrigger(this.productGrid);
       }
 
       // Re-initialize collection product grid for height equalization
@@ -153,18 +221,8 @@ class InfiniteScroll {
         }, 300);
       }
 
-      // Check if there are more pages - if we got fewer products than requested, we're done
-      // Also check if there's pagination info indicating more pages exist
-      const paginationInfo = newContainer.querySelector(".pagination");
-      if (newProducts.length < this.productsPerPage) {
-        this.hasMorePages = false;
-      } else if (paginationInfo) {
-        // Check if there's a next page link
-        const nextPageLink = paginationInfo.querySelector('a[aria-label*="Next"], .pagination__item--next:not(.disabled)');
-        if (!nextPageLink) {
-          this.hasMorePages = false;
-        }
-      }
+      // Don't update product count during infinite scroll - it's already set on initial load
+      // The count is calculated from the first page ratio and total collection count
 
     } catch (error) {
       console.error("Error loading more products:", error);
@@ -172,7 +230,46 @@ class InfiniteScroll {
     } finally {
       this.loading = false;
       if (this.loader) {
-        this.loader.style.display = "none";
+        if (this.hasMorePages) {
+          // Show loader and re-observe if there are more pages
+          this.loader.style.display = "block";
+          
+          // Disconnect and reconnect observer to ensure it's properly set up
+          if (this.observer) {
+            this.observer.disconnect();
+            // Use multiple requestAnimationFrame calls to ensure DOM is fully updated
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                if (this.loader && this.hasMorePages && this.observer) {
+                  this.observer.observe(this.loader);
+                  console.log(`Infinite scroll: Observer re-attached for page ${this.currentPage + 1}, loader visible: ${this.loader.offsetParent !== null}`);
+                  
+                  // If loader is already in viewport, trigger load immediately
+                  const rect = this.loader.getBoundingClientRect();
+                  const isInViewport = rect.top < window.innerHeight + 200; // 200px is rootMargin
+                  if (isInViewport && !this.loading) {
+                    console.log("Infinite scroll: Loader already in viewport, loading next page immediately");
+                    setTimeout(() => {
+                      if (!this.loading && this.hasMorePages) {
+                        this.loadMoreProducts();
+                      }
+                    }, 100);
+                  }
+                }
+              });
+            });
+          }
+        } else {
+          // Hide loader if no more pages
+          this.loader.style.display = "none";
+          if (this.observer) {
+            this.observer.disconnect();
+          }
+          console.log("Infinite scroll: No more pages to load");
+          
+          // Note: Product count is now handled by Liquid, not JavaScript
+          // The count is calculated server-side and displayed immediately
+        }
       }
     }
   }

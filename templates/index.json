@@ -65,7 +65,7 @@
     "featured_collection": {
       "type": "featured-collection",
       "settings": {
-        "collection": "all",
+        "collection": "new-items",
         "products_to_show": 25,
         "title": "<strong>What’s New<\/strong>",
         "heading_size": "h0",
@@ -174,9 +174,9 @@
       "type": "featured-collection",
       "name": "t:sections.featured-collection.presets.name",
       "settings": {
-        "collection": "1-toy-capsules",
+        "collection": "toy-capsules",
         "products_to_show": 15,
-        "title": "<strong>Top Sellers<\/strong>",
+        "title": "<strong>Top Toy Capsules<\/strong>",
         "heading_size": "h0",
         "title_alignment": "center",
         "description": "",
@@ -186,7 +186,7 @@
         "enable_desktop_slider": false,
         "full_width": false,
         "show_view_all": true,
-        "view_all_text": "Shop All Top Sellers",
+        "view_all_text": "Shop All Toy Capsules",
         "view_all_style": "solid",
         "color_scheme": "",
         "image_ratio": "portrait",

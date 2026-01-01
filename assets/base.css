@@ -2830,7 +2830,7 @@ menu-drawer + .header__search {
     order: 11;
     flex-basis: calc(100% + 3.2rem);
     margin-inline: -1.6rem;
-    padding: 1.55rem 1.6rem;
+    padding: 1.55rem 0.6rem;
     background: #fef100;
     flex-direction: column;
   }
@@ -2848,6 +2848,8 @@ menu-drawer + .header__search {
     background: none;
     border: none;
     pointer-events: all;
+    flex-wrap: nowrap;
+    white-space: nowrap;
   }
 
   .header__phone-icon {
@@ -2861,8 +2863,6 @@ menu-drawer + .header__search {
   }
 
   .header__phone-number {
-    width: 10.5rem;
-    height: 1.9rem;
     font-size: 1.6rem;
     line-height: 1.9rem;
     text-decoration-line: underline;

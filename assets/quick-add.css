@@ -367,6 +367,13 @@ quick-add-modal .product-form__buttons {
   content: "+";
 }
 
+@media screen and (max-width: 749px) {
+  .quick-add__submit {
+    padding: 0.55rem 1rem;
+    width: 100%;
+  }
+}
+
 quick-add-modal .product-media-container.constrain-height {
   --viewport-offset: calc(
     (
