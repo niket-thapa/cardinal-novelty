@@ -18,6 +18,10 @@
         "color_scheme": "scheme-1"
       }
     },
+    "product-count-data": {
+      "type": "product-count-data",
+      "settings": {}
+    },
     "product-grid": {
       "type": "main-collection-product-grid",
       "settings": {
@@ -42,6 +46,7 @@
   "order": [
     "breadcrumbs_A7n9cY",
     "banner",
+    "product-count-data",
     "product-grid"
   ]
 }

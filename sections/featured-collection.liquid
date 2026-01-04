@@ -106,7 +106,29 @@
           {% assign lazy_load = false %}
           {% paginate section.settings.collection.products by section.settings.products_to_show %}
             {%- for product in section.settings.collection.products limit: section.settings.products_to_show -%}
-              {%- if product.metafields.custom.hide_from_listings.value != true and product.available -%}
+              {%- liquid
+                assign should_show_product = true
+                
+                # Check if product should be hidden from listings
+                if product.metafields.custom.hide_from_listings.value == true or product.available == false
+                  assign should_show_product = false
+                endif
+                
+                # Check if all variants are hidden
+                if should_show_product and product.variants_count > 0
+                  assign all_variants_hidden = true
+                  for variant in product.variants
+                    if variant.metafields.custom.hide_product != true
+                      assign all_variants_hidden = false
+                      break
+                    endif
+                  endfor
+                  if all_variants_hidden
+                    assign should_show_product = false
+                  endif
+                endif
+              -%}
+              {%- if should_show_product -%}
                 {% if lazy_load == false and forloop.index > max_columns_to_show %}
                   {% assign lazy_load = true %}
                 {% endif %}

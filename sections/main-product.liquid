@@ -542,7 +542,7 @@
                     product: product,
                     product_form_id: product_form_id,
                     section_id: section.id,
-                    show_pickup_availability: true
+                    show_pickup_availability: false
                   %}
                 {%- else -%}
                   {%- render 'buy-buttons',
@@ -550,7 +550,7 @@
                     product: product,
                     product_form_id: product_form_id,
                     section_id: section.id,
-                    show_pickup_availability: true
+                    show_pickup_availability: false
                   %}
                 {%- endif -%}
               {%- when 'rating' -%}
@@ -654,7 +654,29 @@
                                     limit: block.settings.products_per_page
                                     offset: continue
                                   -%}
-                                    {%- if product.metafields.custom.hide_from_listings.value != true and product.available -%}
+                                    {%- liquid
+                                      assign should_show_product = true
+                                      
+                                      # Check if product should be hidden from listings
+                                      if product.metafields.custom.hide_from_listings.value == true or product.available == false
+                                        assign should_show_product = false
+                                      endif
+                                      
+                                      # Check if all variants are hidden
+                                      if should_show_product and product.variants_count > 0
+                                        assign all_variants_hidden = true
+                                        for variant in product.variants
+                                          if variant.metafields.custom.hide_product != true
+                                            assign all_variants_hidden = false
+                                            break
+                                          endif
+                                        endfor
+                                        if all_variants_hidden
+                                          assign should_show_product = false
+                                        endif
+                                      endif
+                                    -%}
+                                    {%- if should_show_product -%}
                                       <li>
                                         {%- if block.settings.enable_quick_add -%}
                                           {% assign quick_add = 'standard' %}

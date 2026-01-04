@@ -37,7 +37,29 @@
       >
         {% assign skip_card_product_styles = false %}
         {% for recommendation in recommendations.products %}
-          {%- if recommendation.metafields.custom.hide_from_listings.value != true and recommendation.available -%}
+          {%- liquid
+            assign should_show_product = true
+            
+            # Check if product should be hidden from listings
+            if recommendation.metafields.custom.hide_from_listings.value == true or recommendation.available == false
+              assign should_show_product = false
+            endif
+            
+            # Check if all variants are hidden
+            if should_show_product and recommendation.variants_count > 0
+              assign all_variants_hidden = true
+              for variant in recommendation.variants
+                if variant.metafields.custom.hide_product != true
+                  assign all_variants_hidden = false
+                  break
+                endif
+              endfor
+              if all_variants_hidden
+                assign should_show_product = false
+              endif
+            endif
+          -%}
+          {%- if should_show_product -%}
             <li class="grid__item">
               {% render 'card-product',
                 card_product: recommendation,
